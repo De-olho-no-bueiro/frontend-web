@@ -1,18 +1,27 @@
-export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'https://backend-q7yq.onrender.com/api';
+function buildApiUrl(endpoint: string) {
+  return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+}
+
+export async function fetchPublic(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  return fetch(buildApiUrl(endpoint), { ...options, headers });
+}
 
 export async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
-
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers as Record<string, string>),
   };
 
-  return fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  return fetch(buildApiUrl(endpoint), { ...options, headers, credentials: 'include' });
 }

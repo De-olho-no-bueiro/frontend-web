@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { MapContainer, TileLayer, Polygon, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Polygon, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { FloodArea, Manhole } from '@/features/map/models/MapTypes';
 import { NIVEL_COLORS } from '@/features/map/models/MapTypes';
@@ -12,12 +12,13 @@ interface MapViewProps {
   floodAreas?: FloodArea[];
   manholes?: Manhole[];
   focusLocation?: { latitude: number; longitude: number; timestamp: number } | null;
+  selectedOccurrenceId?: string | null;
+  emptyState?: boolean;
 }
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const DEFAULT_ZOOM = 13;
 
-// Marcador customizado análogo ao mobile: halo laranja translúcido + núcleo sólido com borda branca
 function createManholeIcon() {
   return L.divIcon({
     className: '',
@@ -52,7 +53,15 @@ function createManholeIcon() {
   });
 }
 
-function MapController({ focusLocation }: { focusLocation: MapViewProps['focusLocation'] }) {
+function MapController({
+  focusLocation,
+  floodAreas,
+  manholes,
+}: {
+  focusLocation: MapViewProps['focusLocation'];
+  floodAreas: FloodArea[];
+  manholes: Manhole[];
+}) {
   const map = useMap();
 
   useEffect(() => {
@@ -63,12 +72,40 @@ function MapController({ focusLocation }: { focusLocation: MapViewProps['focusLo
     }
   }, [focusLocation, map]);
 
+  useEffect(() => {
+    if (focusLocation || (floodAreas.length === 0 && manholes.length === 0)) return;
+
+    const bounds = L.latLngBounds([]);
+
+    floodAreas.forEach((floodArea) => {
+      floodArea.coordinates.forEach((coordinate) => {
+        bounds.extend([coordinate.latitude, coordinate.longitude]);
+      });
+    });
+
+    manholes.forEach((manhole) => {
+      bounds.extend([manhole.latitude, manhole.longitude]);
+    });
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [focusLocation, floodAreas, manholes, map]);
+
   return null;
 }
 
-export default function MapView({ center, zoom, floodAreas = [], manholes = [], focusLocation }: MapViewProps) {
+export default function MapView({
+  center,
+  zoom,
+  floodAreas = [],
+  manholes = [],
+  focusLocation,
+  selectedOccurrenceId,
+  emptyState = false,
+}: MapViewProps) {
   useEffect(() => {
-    // Leaflet exige que o ícone padrão seja redefinido no Next.js para evitar ícones quebrados
+    // Leaflet exige redefinir urls padrao no Next.js
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
@@ -81,44 +118,56 @@ export default function MapView({ center, zoom, floodAreas = [], manholes = [], 
   const manholeIcon = createManholeIcon();
 
   return (
-    <MapContainer
-      center={center ?? DEFAULT_CENTER}
-      zoom={zoom ?? DEFAULT_ZOOM}
-      style={{ width: '100%', height: '100%' }}
-      zoomControl
-    >
-      <MapController focusLocation={focusLocation} />
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {emptyState && <div className="map-view-empty-state">Nenhum ponto para mostrar neste recorte.</div>}
 
-      {floodAreas.map((fa) => {
-        const colors = NIVEL_COLORS[fa.nivel];
-        const positions = fa.coordinates.map(
-          (c) => [c.latitude, c.longitude] as [number, number]
-        );
-        return (
-          <Polygon
-            key={fa.id}
-            positions={positions}
-            pathOptions={{
-              fillColor: colors.fill,
-              fillOpacity: 1,
-              color: colors.stroke,
-              weight: 2,
-            }}
-          />
-        );
-      })}
-
-      {manholes.map((m) => (
-        <Marker
-          key={m.id}
-          position={[m.latitude, m.longitude]}
-          icon={manholeIcon}
+      <MapContainer
+        center={center ?? DEFAULT_CENTER}
+        zoom={zoom ?? DEFAULT_ZOOM}
+        style={{ width: '100%', height: '100%' }}
+        zoomControl
+      >
+        <MapController focusLocation={focusLocation} floodAreas={floodAreas} manholes={manholes} />
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      ))}
-    </MapContainer>
+
+        {floodAreas.map((floodArea) => {
+          const colors = NIVEL_COLORS[floodArea.nivel];
+          const positions = floodArea.coordinates.map(
+            (coordinate) => [coordinate.latitude, coordinate.longitude] as [number, number],
+          );
+          const isSelected = selectedOccurrenceId === floodArea.id;
+
+          return (
+            <Polygon
+              key={floodArea.id}
+              positions={positions}
+              pathOptions={{
+                fillColor: colors.fill,
+                fillOpacity: isSelected ? 0.9 : 0.75,
+                color: colors.stroke,
+                weight: isSelected ? 4 : 2,
+              }}
+            >
+              <Popup>
+                <strong>Area de alagamento</strong>
+                <div>{floodArea.endereco ?? 'Endereco nao informado'}</div>
+              </Popup>
+            </Polygon>
+          );
+        })}
+
+        {manholes.map((manhole) => (
+          <Marker key={manhole.id} position={[manhole.latitude, manhole.longitude]} icon={manholeIcon}>
+            <Popup>
+              <strong>{selectedOccurrenceId === manhole.id ? 'Bueiro selecionado' : 'Bueiro danificado'}</strong>
+              <div>{manhole.endereco ?? 'Endereco nao informado'}</div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 }

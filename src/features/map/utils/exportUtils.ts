@@ -43,37 +43,72 @@ export function groupByMonth(floodAreas: FloodArea[], manholes: Manhole[]): Mont
   return Array.from(map.values()).sort((a, b) => b.key.localeCompare(a.key));
 }
 
-export function exportMonthAsJson(group: MonthGroup): void {
-  const payload = {
-    mes: group.label,
-    exportadoEm: new Date().toISOString(),
-    alagamentos: group.floodAreas,
-    bueiros: group.manholes,
-  };
+function escapeCsvValue(value: string | number | null | undefined) {
+  const normalized = value == null ? '' : String(value);
+  return `"${normalized.replace(/"/g, '""')}"`;
+}
 
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+function downloadCsv(content: string, filename: string) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `donb-${group.key}.json`;
-  a.click();
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
   URL.revokeObjectURL(url);
 }
 
-export function exportDataAsJson(floodAreas: FloodArea[], manholes: Manhole[]): void {
-  const payload = {
-    exportadoEm: new Date().toISOString(),
-    alagamentos: floodAreas,
-    bueiros: manholes,
-  };
+function toCsvRows(floodAreas: FloodArea[], manholes: Manhole[]) {
+  const header = [
+    'tipo',
+    'id',
+    'nivel',
+    'data_criacao',
+    'endereco',
+    'descricao',
+    'latitude',
+    'longitude',
+    'coordenadas_area',
+  ];
 
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  
+  const floodRows = floodAreas.map((floodArea) => [
+    'alagamento',
+    floodArea.id,
+    floodArea.nivel,
+    floodArea.dataHora,
+    floodArea.endereco ?? '',
+    floodArea.descricao ?? '',
+    floodArea.coordinates[0]?.latitude ?? '',
+    floodArea.coordinates[0]?.longitude ?? '',
+    floodArea.coordinates
+      .map((coordinate) => `${coordinate.latitude},${coordinate.longitude}`)
+      .join(' | '),
+  ]);
+
+  const manholeRows = manholes.map((manhole) => [
+    'bueiro',
+    manhole.id,
+    '',
+    manhole.dataHora,
+    manhole.endereco ?? '',
+    manhole.descricao ?? '',
+    manhole.latitude,
+    manhole.longitude,
+    '',
+  ]);
+
+  return [header, ...floodRows, ...manholeRows]
+    .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
+    .join('\n');
+}
+
+export function exportMonthAsCsv(group: MonthGroup): void {
+  const csv = toCsvRows(group.floodAreas, group.manholes);
+  downloadCsv(csv, `donb-${group.key}.csv`);
+}
+
+export function exportDataAsCsv(floodAreas: FloodArea[], manholes: Manhole[]): void {
+  const csv = toCsvRows(floodAreas, manholes);
   const dateStr = new Date().toISOString().split('T')[0];
-  a.download = `donb-export-${dateStr}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadCsv(csv, `donb-tabela-${dateStr}.csv`);
 }

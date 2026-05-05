@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# De Olho no Bueiro Web
 
-## Getting Started
+Portal web publico em Next.js para leitura de ocorrencias de alagamento e bueiros.
 
-First, run the development server:
+## Ambiente
+
+Crie `.env.local` a partir de `.env.example`.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+BACKEND_API_URL=http://localhost:3001/api
+NEXT_PUBLIC_MOCK_ENABLED=false
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Notas:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- backend Nest usa prefixo global `/api`
+- em desenvolvimento local, rode backend em `3001` para nao conflitar com Next em `3000`
+- frontend agora usa proxy interno do Next para evitar erro de CORS/mixed content no navegador
+- leitura publica:
+  - `GET /api/public/v1/flood-areas`
+  - `GET /api/public/v1/manholes`
+  - `GET /api/public/v1/reportes`
+- login opcional para futuras acoes pessoais:
+  - `POST /api/web/v1/auth/login`
+- mock agora so liga se `NEXT_PUBLIC_MOCK_ENABLED=true`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Subir projeto
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Abra `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Fluxo esperado
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. subir backend
+2. configurar `NEXT_PUBLIC_API_URL`
+3. abrir `/`
+4. navegar no portal publico
+5. opcional: usar `/login` para sessao de cidadao
 
-## Deploy on Vercel
+## Exportacao
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Painel exporta tabela filtrada em CSV com confirmacao antes do download.

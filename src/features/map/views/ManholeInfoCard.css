@@ -19,6 +19,11 @@
   border-color: #ff9500;
 }
 
+.manhole-card--selected {
+  border-color: rgba(249, 115, 22, 0.95);
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.18), 0 16px 32px rgba(15, 23, 42, 0.1);
+}
+
 .manhole-card-header {
   display: flex;
   align-items: center;

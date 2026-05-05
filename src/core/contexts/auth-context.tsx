@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { API_URL } from '@/core/utils/api';
 
 type User = {
   id: string;
@@ -13,14 +12,14 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   signIn: async () => {},
-  signOut: () => {},
+  signOut: async () => {},
 });
 
 export function useAuth() {
@@ -30,6 +29,11 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const persistSession = (nextUser: User) => {
+    localStorage.setItem('userData', JSON.stringify(nextUser));
+    setUser(nextUser);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('userData');
@@ -44,20 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    // MOCK DE DESENVOLVIMENTO: Ativo por padrão se não houver flag ou se for true.
-    // Só desativa se explicitamente definido como 'false' no .env
-    const MOCK_ENABLED = process.env.NEXT_PUBLIC_MOCK_ENABLED !== 'false';
+    const MOCK_ENABLED = process.env.NEXT_PUBLIC_MOCK_ENABLED === 'true';
     if (MOCK_ENABLED) {
-      const mockToken = 'mock-token-dev';
       const mockUser: User = { id: '0', name: email.split('@')[0], email };
-      localStorage.setItem('userToken', mockToken);
-      localStorage.setItem('userData', JSON.stringify(mockUser));
-      document.cookie = `userToken=${mockToken}; path=/; SameSite=Strict`;
-      setUser(mockUser);
+      persistSession(mockUser);
       return;
     }
-    // ─────────────────────────────────────────────────────────────────────────
-    const resp = await fetch(`${API_URL}/api/web/v1/auth/login`, {
+
+    const resp = await fetch('/api/web/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -75,16 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
     };
 
-    localStorage.setItem('userToken', data.access_token);
-    localStorage.setItem('userData', JSON.stringify(loggedUser));
-    document.cookie = `userToken=${data.access_token}; path=/; SameSite=Strict`;
-    setUser(loggedUser);
+    persistSession(loggedUser);
   };
 
-  const signOut = () => {
-    localStorage.removeItem('userToken');
+  const signOut = async () => {
     localStorage.removeItem('userData');
-    document.cookie = 'userToken=; path=/; max-age=0; SameSite=Strict';
+    await fetch('/api/web/v1/auth/logout', {
+      method: 'POST',
+    });
     setUser(null);
   };
 

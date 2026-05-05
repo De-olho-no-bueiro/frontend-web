@@ -5,12 +5,14 @@ import './MapItemsTable.css';
 interface MapItemsTableProps {
   floodAreas: FloodArea[];
   manholes: Manhole[];
-  onFocus: (lat: number, lng: number) => void;
+  onFocus: (lat: number, lng: number, id: string) => void;
   sortConfig?: { key: string; direction: 'asc' | 'desc' };
   onSort?: (key: string) => void;
+  selectedId?: string | null;
+  resultCount?: number;
 }
 
-type MapItem = 
+type MapItem =
   | { type: 'floodArea'; data: FloodArea }
   | { type: 'manhole'; data: Manhole };
 
@@ -24,15 +26,22 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function MapItemsTable({ floodAreas, manholes, onFocus, sortConfig, onSort }: MapItemsTableProps) {
+export default function MapItemsTable({
+  floodAreas,
+  manholes,
+  onFocus,
+  sortConfig,
+  onSort,
+  selectedId,
+  resultCount,
+}: MapItemsTableProps) {
   const items: MapItem[] = [
-    ...floodAreas.map(f => ({ type: 'floodArea' as const, data: f })),
-    ...manholes.map(m => ({ type: 'manhole' as const, data: m })),
+    ...floodAreas.map((floodArea) => ({ type: 'floodArea' as const, data: floodArea })),
+    ...manholes.map((manhole) => ({ type: 'manhole' as const, data: manhole })),
   ];
-  
-  // order by date (newest first) - Only if no sortConfig provided
+
   if (!sortConfig) {
-    items.sort((a, b) => new Date(b.data.dataHora).getTime() - new Date(a.data.dataHora).getTime());
+    items.sort((left, right) => new Date(right.data.dataHora).getTime() - new Date(left.data.dataHora).getTime());
   }
 
   function renderSortIcon(key: string) {
@@ -46,7 +55,11 @@ export default function MapItemsTable({ floodAreas, manholes, onFocus, sortConfi
 
   return (
     <div className="map-items-table-container">
-      <h2 className="map-items-table-title">Tabela de Ocorrências</h2>
+      <div className="map-items-table-heading">
+        <h2 className="map-items-table-title">Tabela de Ocorrencias</h2>
+        <span className="map-items-table-summary">{resultCount ?? items.length} resultados filtrados</span>
+      </div>
+
       <div className="map-items-table-wrapper">
         <table className="map-items-table">
           <thead>
@@ -54,17 +67,20 @@ export default function MapItemsTable({ floodAreas, manholes, onFocus, sortConfi
               <th onClick={() => onSort?.('type')} className="sortable-header">
                 Tipo {renderSortIcon('type')}
               </th>
+              <th onClick={() => onSort?.('nivel')} className="sortable-header">
+                Nivel {renderSortIcon('nivel')}
+              </th>
               <th onClick={() => onSort?.('id')} className="sortable-header">
                 ID {renderSortIcon('id')}
               </th>
               <th onClick={() => onSort?.('dataHora')} className="sortable-header">
-                Data de criação {renderSortIcon('dataHora')}
+                Data de criacao {renderSortIcon('dataHora')}
               </th>
               <th onClick={() => onSort?.('endereco')} className="sortable-header">
-                Endereço {renderSortIcon('endereco')}
+                Endereco {renderSortIcon('endereco')}
               </th>
               <th onClick={() => onSort?.('descricao')} className="sortable-header">
-                Descrição {renderSortIcon('descricao')}
+                Descricao {renderSortIcon('descricao')}
               </th>
               <th>Detalhes / Coordenadas</th>
             </tr>
@@ -74,71 +90,72 @@ export default function MapItemsTable({ floodAreas, manholes, onFocus, sortConfi
               if (item.type === 'floodArea') {
                 const floodArea = item.data;
                 const colors = NIVEL_COLORS[floodArea.nivel];
+
                 return (
-                  <tr 
-                    key={`fa-${floodArea.id}`} 
-                    className="map-items-row--clickable"
-                    onClick={() => onFocus(floodArea.coordinates[0].latitude, floodArea.coordinates[0].longitude)}
+                  <tr
+                    key={`fa-${floodArea.id}`}
+                    className={`map-items-row--clickable ${selectedId === floodArea.id ? 'map-items-row--selected' : ''}`}
+                    onClick={() => onFocus(floodArea.coordinates[0].latitude, floodArea.coordinates[0].longitude, floodArea.id)}
                   >
                     <td>
                       <div className="map-items-type-column">
-                        <span className="map-items-table-type">Área de Alagamento</span>
-                        <span
-                          className="map-items-table-badge"
-                          style={{ backgroundColor: colors.badge }}
-                        >
+                        <span className="map-items-table-type">Area de Alagamento</span>
+                        <span className="map-items-table-badge" style={{ backgroundColor: colors.badge }}>
                           {NIVEL_LABELS[floodArea.nivel]}
                         </span>
                       </div>
                     </td>
+                    <td>{NIVEL_LABELS[floodArea.nivel]}</td>
                     <td>{floodArea.id}</td>
                     <td>{formatDate(floodArea.dataHora)}</td>
                     <td>{floodArea.endereco || '—'}</td>
                     <td>{floodArea.descricao || '—'}</td>
                     <td>
                       <div className="map-items-table-coords-container">
-                        {floodArea.coordinates.map((c, i) => (
-                          <div key={i} className="map-items-table-coord-item">
-                            P{i + 1}: {c.latitude.toFixed(4)}, {c.longitude.toFixed(4)}
+                        {floodArea.coordinates.map((coordinate, index) => (
+                          <div key={index} className="map-items-table-coord-item">
+                            P{index + 1}: {coordinate.latitude.toFixed(4)}, {coordinate.longitude.toFixed(4)}
                           </div>
                         ))}
                       </div>
                     </td>
                   </tr>
                 );
-              } else {
-                const manhole = item.data;
-                return (
-                  <tr 
-                    key={`mh-${manhole.id}`}
-                    className="map-items-row--clickable"
-                    onClick={() => onFocus(manhole.latitude, manhole.longitude)}
-                  >
-                    <td>
-                      <div className="map-items-type-column">
-                        <span className="map-items-table-type">Bueiro Danificado</span>
-                        <div className="map-items-table-icon">
-                          <div className="map-items-table-icon-core" />
-                        </div>
-                      </div>
-                    </td>
-                    <td>{manhole.id}</td>
-                    <td>{formatDate(manhole.dataHora)}</td>
-                    <td>{manhole.endereco || '—'}</td>
-                    <td>{manhole.descricao || '—'}</td>
-                    <td>
-                      <div className="map-items-table-coords-container">
-                        <div className="map-items-table-coord-item">
-                          Lat: {manhole.latitude.toFixed(6)}
-                        </div>
-                        <div className="map-items-table-coord-item">
-                          Lng: {manhole.longitude.toFixed(6)}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                );
               }
+
+              const manhole = item.data;
+
+              return (
+                <tr
+                  key={`mh-${manhole.id}`}
+                  className={`map-items-row--clickable ${selectedId === manhole.id ? 'map-items-row--selected' : ''}`}
+                  onClick={() => onFocus(manhole.latitude, manhole.longitude, manhole.id)}
+                >
+                  <td>
+                    <div className="map-items-type-column">
+                      <span className="map-items-table-type">Bueiro Danificado</span>
+                      <div className="map-items-table-icon">
+                        <div className="map-items-table-icon-core" />
+                      </div>
+                    </div>
+                  </td>
+                  <td>—</td>
+                  <td>{manhole.id}</td>
+                  <td>{formatDate(manhole.dataHora)}</td>
+                  <td>{manhole.endereco || '—'}</td>
+                  <td>{manhole.descricao || '—'}</td>
+                  <td>
+                    <div className="map-items-table-coords-container">
+                      <div className="map-items-table-coord-item">
+                        Lat: {manhole.latitude.toFixed(6)}
+                      </div>
+                      <div className="map-items-table-coord-item">
+                        Lng: {manhole.longitude.toFixed(6)}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              );
             })}
           </tbody>
         </table>

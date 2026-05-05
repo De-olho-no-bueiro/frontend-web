@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuthViewModel } from '@/features/auth/viewmodels/useAuthViewModel';
 import './LoginPage.css';
 
@@ -18,7 +19,7 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <h1 className="login-title">De Olho no Bueiro</h1>
-        <p className="login-subtitle">Acesse sua conta para continuar</p>
+        <p className="login-subtitle">Entrar e opcional. Dados publicos seguem acessiveis no portal.</p>
 
         <div className="login-form">
           <div className="login-field">
@@ -53,6 +54,10 @@ export default function LoginPage() {
           >
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
+
+          <Link href="/" className="login-link-home">
+            Voltar para portal publico
+          </Link>
         </div>
       </div>
     </div>

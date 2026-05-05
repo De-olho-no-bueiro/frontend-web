@@ -5,6 +5,7 @@ import './FloodAreaInfoCard.css';
 interface FloodAreaInfoCardProps {
   floodArea: FloodArea;
   onFocus?: () => void;
+  selected?: boolean;
 }
 
 function formatDate(iso: string): string {
@@ -17,11 +18,11 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function FloodAreaInfoCard({ floodArea, onFocus }: FloodAreaInfoCardProps) {
+export default function FloodAreaInfoCard({ floodArea, onFocus, selected = false }: FloodAreaInfoCardProps) {
   const colors = NIVEL_COLORS[floodArea.nivel];
 
   return (
-    <div className="info-card info-card--clickable" onClick={onFocus}>
+    <div className={`info-card info-card--clickable ${selected ? 'info-card--selected' : ''}`} onClick={onFocus}>
       <div className="info-card-header">
         <h2 className="info-card-title">Área de Alagamento</h2>
         <span
