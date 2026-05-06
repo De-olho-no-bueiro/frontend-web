@@ -25,6 +25,7 @@ import {
   sortOccurrences,
   type DashboardFilters as FilterState,
   type SortConfig,
+  type SortKey,
 } from '@/features/map/utils/occurrenceUtils';
 import { useAuth } from '@/core/contexts/auth-context';
 import { fetchPublic } from '@/core/utils/api';
@@ -228,7 +229,7 @@ export default function MapScreen() {
     }
   }, [filteredOccurrences, selectedOccurrenceId]);
 
-  const handleSort = (key: string) => {
+  const handleSort = (key: SortKey) => {
     setSortConfig((prev) => ({
       key,
       direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc',

@@ -10,9 +10,11 @@ export type DashboardFilters = {
 };
 
 export type SortConfig = {
-  key: string;
+  key: SortKey;
   direction: 'asc' | 'desc';
 };
+
+export type SortKey = 'type' | 'nivel' | 'id' | 'dataHora' | 'endereco' | 'descricao';
 
 export type ChartDatum = {
   label: string;
@@ -37,6 +39,12 @@ export function filterOccurrences(occurrences: Occurrence[], filters: DashboardF
 export function sortOccurrences(occurrences: Occurrence[], sortConfig: SortConfig) {
   const items = [...occurrences];
 
+  const valueByKey: Record<Exclude<SortKey, 'dataHora' | 'type' | 'nivel'>, (item: Occurrence) => string> = {
+    id: (item) => item.id,
+    endereco: (item) => item.address,
+    descricao: (item) => item.description,
+  };
+
   items.sort((left, right) => {
     const { key, direction } = sortConfig;
     const factor = direction === 'asc' ? 1 : -1;
@@ -53,8 +61,8 @@ export function sortOccurrences(occurrences: Occurrence[], sortConfig: SortConfi
       return (left.level ?? '').localeCompare(right.level ?? '', 'pt-BR') * factor;
     }
 
-    const leftValue = String((left as Record<string, unknown>)[key] ?? '').toLowerCase();
-    const rightValue = String((right as Record<string, unknown>)[key] ?? '').toLowerCase();
+    const leftValue = valueByKey[key](left).toLowerCase();
+    const rightValue = valueByKey[key](right).toLowerCase();
 
     return leftValue.localeCompare(rightValue, 'pt-BR') * factor;
   });

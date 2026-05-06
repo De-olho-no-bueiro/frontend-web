@@ -1,4 +1,5 @@
 import type { FloodArea, Manhole } from '@/features/map/models/MapTypes';
+import type { SortConfig, SortKey } from '@/features/map/utils/occurrenceUtils';
 import { NIVEL_LABELS, NIVEL_COLORS } from '@/features/map/models/MapTypes';
 import './MapItemsTable.css';
 
@@ -6,8 +7,8 @@ interface MapItemsTableProps {
   floodAreas: FloodArea[];
   manholes: Manhole[];
   onFocus: (lat: number, lng: number, id: string) => void;
-  sortConfig?: { key: string; direction: 'asc' | 'desc' };
-  onSort?: (key: string) => void;
+  sortConfig?: SortConfig;
+  onSort?: (key: SortKey) => void;
   selectedId?: string | null;
   resultCount?: number;
 }
@@ -44,7 +45,7 @@ export default function MapItemsTable({
     items.sort((left, right) => new Date(right.data.dataHora).getTime() - new Date(left.data.dataHora).getTime());
   }
 
-  function renderSortIcon(key: string) {
+  function renderSortIcon(key: SortKey) {
     if (!sortConfig || sortConfig.key !== key) return <span className="sort-icon">↕</span>;
     return <span className="sort-icon active">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>;
   }

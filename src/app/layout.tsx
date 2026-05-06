@@ -14,13 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "De Olho no Bueiro",
+  title: "Dê Olho no Bueiro",
   description: "Painel web para exploracao de ocorrencias de alagamento e bueiros.",
-  icons: {
-    icon: "/logo-tab.svg",
-    shortcut: "/logo-tab.svg",
-    apple: "/logo-tab.svg",
-  },
 };
 
 export default function RootLayout({
