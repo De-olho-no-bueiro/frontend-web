@@ -114,13 +114,10 @@ export default function MapScreen() {
 
         const areasMapped: FloodArea[] = areasRaw.map((area: any) => ({
           id: `area-${area.id}`,
-          coordinates: area.latitude.map((lat: number, index: number) => ({
-            latitude: lat,
-            longitude: area.longitude[index],
-          })),
+          coordinates: Array.isArray(area.coordinates) ? area.coordinates : [],
           nivel: area.nivel || 'medio',
-          descricao: area.posts?.[0]?.content || area.name,
-          endereco: area.posts?.[0]?.endereco,
+          descricao: area.descricao || area.name,
+          endereco: area.endereco,
           dataHora: area.createdAt,
         }));
 
@@ -128,8 +125,8 @@ export default function MapScreen() {
           id: `mh-${manhole.id}`,
           latitude: manhole.latitude,
           longitude: manhole.longitude,
-          descricao: manhole.posts?.[0]?.content || manhole.name,
-          endereco: manhole.posts?.[0]?.endereco,
+          descricao: manhole.descricao || manhole.name,
+          endereco: manhole.endereco,
           dataHora: manhole.createdAt,
         }));
 
