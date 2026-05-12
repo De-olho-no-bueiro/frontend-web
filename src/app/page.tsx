@@ -1,5 +1,5 @@
-import MapScreen from '@/features/map/views/MapScreen';
+import HomePage from '@/features/home/views/HomePage';
 
-export default function Home() {
-  return <MapScreen />;
+export default function Page() {
+  return <HomePage />;
 }

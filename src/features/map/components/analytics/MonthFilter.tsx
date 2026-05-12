@@ -1,13 +1,12 @@
 'use client';
 
 import { MONTH_NAMES } from '@/features/map/utils/exportUtils';
-import './MonthFilter.css';
 
 interface MonthFilterProps {
   availableYears: number[];
-  availableMonths: number[];   // meses disponíveis para o ano selecionado (1-12)
+  availableMonths: number[];
   selectedYear: number;
-  selectedMonth: number;       // 0 = todos os meses
+  selectedMonth: number;
   onYearChange: (year: number) => void;
   onMonthChange: (month: number) => void;
 }
@@ -20,13 +19,16 @@ export default function MonthFilter({
   onYearChange,
   onMonthChange,
 }: MonthFilterProps) {
+  const selectClass =
+    'w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:shadow-[0_0_0_3px_rgba(88,184,244,0.18)]';
+
   return (
-    <div className="month-filter">
-      <div className="month-filter-group">
-        <label htmlFor="month-select" className="month-filter-label">Mostrar dados do mês:</label>
+    <div className="flex flex-wrap gap-4">
+      <div className="flex min-w-[220px] flex-col gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4">
+        <label htmlFor="month-select" className="text-sm font-semibold text-slate-600">Mostrar dados do mês:</label>
         <select
           id="month-select"
-          className="month-filter-select"
+          className={selectClass}
           value={selectedMonth}
           onChange={(e) => onMonthChange(Number(e.target.value))}
         >
@@ -39,11 +41,11 @@ export default function MonthFilter({
         </select>
       </div>
 
-      <div className="month-filter-group">
-        <label htmlFor="year-select" className="month-filter-label">Ano:</label>
+      <div className="flex min-w-[160px] flex-col gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4">
+        <label htmlFor="year-select" className="text-sm font-semibold text-slate-600">Ano:</label>
         <select
           id="year-select"
-          className="month-filter-select"
+          className={selectClass}
           value={selectedYear}
           onChange={(e) => onYearChange(Number(e.target.value))}
         >

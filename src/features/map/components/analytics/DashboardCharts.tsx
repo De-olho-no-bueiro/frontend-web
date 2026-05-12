@@ -1,7 +1,6 @@
 'use client';
 
 import type { ChartDatum } from '@/features/map/utils/occurrenceUtils';
-import './DashboardCharts.css';
 
 type DashboardChartsProps = {
   monthlyData: ChartDatum[];
@@ -12,6 +11,26 @@ type DashboardChartsProps = {
   onLevelSelect: (level: 'all' | 'baixo' | 'leve' | 'medio' | 'grave') => void;
   onNeighborhoodSelect: (value: string) => void;
 };
+
+function ChartCard({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <article className="rounded-[1.5rem] border border-slate-200/70 bg-white/90 p-5 shadow-[0_20px_40px_rgba(45,95,158,0.1)]">
+      <div className="mb-5">
+        <h3 className="m-0 text-lg font-semibold text-slate-900">{title}</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-500">{subtitle}</p>
+      </div>
+      {children}
+    </article>
+  );
+}
 
 function BarChart({
   title,
@@ -27,40 +46,43 @@ function BarChart({
   onBarClick?: (label: string) => void;
 }) {
   const maxValue = Math.max(...data.map((item) => item.value), 1);
+  const toneHover: Record<'teal' | 'orange' | 'slate', string> = {
+    teal: 'hover:border-teal-300',
+    orange: 'hover:border-orange-300',
+    slate: 'hover:border-slate-300',
+  };
 
   return (
-    <article className="dashboard-chart-card">
-      <div className="dashboard-chart-card__header">
-        <div>
-          <h3>{title}</h3>
-          <p>{subtitle}</p>
-        </div>
-      </div>
-
+    <ChartCard title={title} subtitle={subtitle}>
       {data.length === 0 ? (
-        <div className="dashboard-chart-card__empty">Sem dados para este recorte.</div>
+        <div className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+          Sem dados para este recorte.
+        </div>
       ) : (
-        <div className="dashboard-bars">
+        <div className="grid gap-3">
           {data.map((item) => (
             <button
               key={item.label}
               type="button"
-              className={`dashboard-bars__item dashboard-bars__item--${tone}`}
+              className={[
+                'grid grid-cols-[minmax(0,1fr)_minmax(120px,1fr)_auto] items-center gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 text-left transition',
+                toneHover[tone],
+              ].join(' ')}
               onClick={() => onBarClick?.(item.label)}
             >
-              <span className="dashboard-bars__label">{item.label}</span>
-              <div className="dashboard-bars__track">
+              <span className="truncate text-sm font-semibold text-slate-700">{item.label}</span>
+              <div className="h-2.5 overflow-hidden rounded-full bg-slate-200">
                 <div
-                  className="dashboard-bars__fill"
-                  style={{ width: `${(item.value / maxValue) * 100}%`, background: item.color }}
+                  className="h-full rounded-full"
+                  style={{ width: `${(item.value / maxValue) * 100}%`, background: item.color ?? '#0f766e' }}
                 />
               </div>
-              <span className="dashboard-bars__value">{item.value}</span>
+              <span className="text-sm font-bold text-slate-700">{item.value}</span>
             </button>
           ))}
         </div>
       )}
-    </article>
+    </ChartCard>
   );
 }
 
@@ -101,51 +123,51 @@ function DonutChart({
   });
 
   return (
-    <article className="dashboard-chart-card">
-      <div className="dashboard-chart-card__header">
-        <div>
-          <h3>{title}</h3>
-          <p>{subtitle}</p>
-        </div>
-      </div>
-
+    <ChartCard title={title} subtitle={subtitle}>
       {data.length === 0 || total === 0 ? (
-        <div className="dashboard-chart-card__empty">Sem dados para este recorte.</div>
+        <div className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+          Sem dados para este recorte.
+        </div>
       ) : (
-        <div className="dashboard-donut">
-          <svg viewBox="0 0 180 180" className="dashboard-donut__svg" aria-hidden="true">
+        <div className="grid gap-4 lg:grid-cols-[190px_minmax(0,1fr)] lg:items-center">
+          <svg viewBox="0 0 180 180" className="mx-auto h-[180px] w-[180px]" aria-hidden="true">
             {segments.map((segment) => (
               <path key={segment.label} d={segment.path} fill={segment.color ?? '#0f766e'} opacity="0.92" />
             ))}
             <circle cx="90" cy="90" r="44" fill="#fff" />
-            <text x="90" y="84" textAnchor="middle" className="dashboard-donut__total-label">
+            <text x="90" y="84" textAnchor="middle" className="fill-slate-500 text-[10px] uppercase tracking-[0.2em]">
               Total
             </text>
-            <text x="90" y="104" textAnchor="middle" className="dashboard-donut__total-value">
+            <text x="90" y="104" textAnchor="middle" className="fill-slate-900 text-[18px] font-bold">
               {total}
             </text>
           </svg>
 
-          <div className="dashboard-donut__legend">
+          <div className="grid gap-3">
             {data.map((item) => {
               const pct = total === 0 ? 0 : Math.round((item.value / total) * 100);
               return (
                 <button
                   key={item.label}
                   type="button"
-                  className="dashboard-donut__legend-item"
+                  className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 text-left transition hover:border-slate-300"
                   onClick={() => onSliceClick?.(item.label)}
                 >
-                  <span className="dashboard-donut__legend-dot" style={{ background: item.color ?? '#0f766e' }} />
-                  <span className="dashboard-donut__legend-label">{item.label}</span>
-                  <span className="dashboard-donut__legend-value">{item.value} · {pct}%</span>
+                  <span
+                    className="h-3 w-3 rounded-full"
+                    style={{ background: item.color ?? '#0f766e' }}
+                  />
+                  <span className="truncate text-sm font-semibold text-slate-700">{item.label}</span>
+                  <span className="text-sm text-slate-500">
+                    {item.value} · {pct}%
+                  </span>
                 </button>
               );
             })}
           </div>
         </div>
       )}
-    </article>
+    </ChartCard>
   );
 }
 
@@ -159,13 +181,8 @@ export default function DashboardCharts({
   onNeighborhoodSelect,
 }: DashboardChartsProps) {
   return (
-    <section className="dashboard-charts">
-      <BarChart
-        title="Volume por periodo"
-        subtitle="Leitura temporal do recorte filtrado."
-        data={monthlyData}
-        tone="teal"
-      />
+    <section className="grid gap-4 xl:grid-cols-2">
+      <BarChart title="Volume por periodo" subtitle="Leitura temporal do recorte filtrado." data={monthlyData} tone="teal" />
 
       <DonutChart
         title="Distribuicao por tipo"
@@ -186,7 +203,6 @@ export default function DashboardCharts({
             Medio: 'medio',
             Grave: 'grave',
           };
-
           const next = map[label];
           if (next) onLevelSelect(next);
         }}
