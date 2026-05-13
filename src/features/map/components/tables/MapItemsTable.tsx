@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, ArrowUpDown, CircleDot } from 'lucide-react';
+import { uiPanelClass } from '@/core/layouts/siteContentFrame';
 import type { FloodArea, Manhole } from '@/features/map/models/MapTypes';
 import { NIVEL_LABELS, NIVEL_COLORS } from '@/features/map/models/MapTypes';
 import type { SortConfig, SortKey } from '@/features/map/utils/occurrenceUtils';
@@ -44,26 +45,26 @@ export default function MapItemsTable({
   }
 
   function renderSortIcon(key: SortKey) {
-    if (!sortConfig || sortConfig.key !== key) return <ArrowUpDown size={14} className="text-slate-400" />;
+    if (!sortConfig || sortConfig.key !== key) return <ArrowUpDown size={14} className="text-brand-muted" />;
     return sortConfig.direction === 'asc'
-      ? <ArrowUp size={14} className="text-[#29548d]" />
-      : <ArrowDown size={14} className="text-[#29548d]" />;
+      ? <ArrowUp size={14} className="text-brand-eyebrow" />
+      : <ArrowDown size={14} className="text-brand-eyebrow" />;
   }
 
   if (items.length === 0) return null;
 
-  const headClass = 'px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500';
+  const headClass = 'px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.08em] text-brand-muted';
 
   return (
-    <div className="rounded-[1.5rem] border border-slate-200/70 bg-white/95 p-4 shadow-[0_20px_40px_rgba(45,95,158,0.1)]">
+    <div className={`${uiPanelClass} p-5 sm:p-6`}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 text-xl font-semibold text-slate-900">Tabela de Ocorrencias</h2>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
+        <h3 className="m-0 text-xl font-bold tracking-tight text-brand-heading">Tabela de Ocorrencias</h3>
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-brand-muted">
           {resultCount ?? items.length} resultados filtrados
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200/70">
+      <div className="overflow-x-auto rounded-xl border border-slate-200/60">
         <table className="min-w-full divide-y divide-slate-200 text-sm">
           <thead className="bg-slate-50">
             <tr>

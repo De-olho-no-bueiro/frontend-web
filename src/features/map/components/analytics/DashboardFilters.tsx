@@ -1,5 +1,7 @@
 'use client';
 
+import { uiPanelClass } from '@/core/layouts/siteContentFrame';
+import { focusRingBrandClass } from '@/core/styles/focusRing';
 import type { NivelAlagamento } from '@/features/map/models/MapTypes';
 
 type DashboardFiltersProps = {
@@ -23,10 +25,8 @@ type DashboardFiltersProps = {
 
 const MONTH_LABELS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-const fieldClass =
-  'flex flex-col gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4';
-const controlClass =
-  'w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:shadow-[0_0_0_3px_rgba(88,184,244,0.18)]';
+const labelClass = 'text-sm font-semibold text-brand-muted';
+const controlClass = `w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 text-sm text-brand-heading ${focusRingBrandClass}`;
 
 export default function DashboardFilters({
   availableYears,
@@ -47,24 +47,24 @@ export default function DashboardFilters({
   onClear,
 }: DashboardFiltersProps) {
   return (
-    <section className="rounded-[1.6rem] border border-slate-200/70 bg-white/90 p-5 shadow-[0_20px_40px_rgba(45,95,158,0.1)]">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+    <section className={`${uiPanelClass} p-6 sm:p-7`} aria-labelledby="titulo-filtros-dashboard">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-slate-100 pb-6">
         <div>
-          <p className="mb-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#1f4f80]">Exploracao</p>
-          <h2 className="m-0 text-[1.55rem] tracking-[-0.03em] text-slate-900">Filtros de leitura</h2>
+          <p className="mb-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-brand-eyebrow">Exploracao</p>
+          <h2 id="titulo-filtros-dashboard" className="m-0 text-[clamp(1.35rem,2vw,1.6rem)] font-bold tracking-[-0.03em] text-brand-heading">Filtros de leitura</h2>
         </div>
         <button
           type="button"
-          className="inline-flex min-h-11 items-center justify-center rounded-full border border-slate-200/80 bg-slate-50 px-4 text-sm font-semibold text-slate-700 transition hover:-translate-y-px"
+          className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/90 px-4 text-sm font-semibold text-brand-heading shadow-sm transition hover:bg-slate-100/90"
           onClick={onClear}
         >
           Limpar filtros
         </button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-        <label className={`${fieldClass} xl:col-span-2`}>
-          <span className="text-sm font-semibold text-slate-600">Busca</span>
+      <div className="grid gap-x-6 gap-y-5 md:grid-cols-2 xl:grid-cols-6 xl:gap-y-4">
+        <div className="flex flex-col gap-2 xl:col-span-2">
+          <span className={labelClass}>Busca</span>
           <input
             type="text"
             value={searchQuery}
@@ -72,10 +72,10 @@ export default function DashboardFilters({
             placeholder="Endereco, descricao, bairro, ID..."
             className={controlClass}
           />
-        </label>
+        </div>
 
-        <label className={fieldClass}>
-          <span className="text-sm font-semibold text-slate-600">Ano</span>
+        <div className="flex flex-col gap-2">
+          <span className={labelClass}>Ano</span>
           <select
             value={selectedYear}
             onChange={(event) => onYearChange(Number(event.target.value))}
@@ -87,10 +87,10 @@ export default function DashboardFilters({
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label className={fieldClass}>
-          <span className="text-sm font-semibold text-slate-600">Mes</span>
+        <div className="flex flex-col gap-2">
+          <span className={labelClass}>Mes</span>
           <select
             value={selectedMonth}
             onChange={(event) => onMonthChange(Number(event.target.value))}
@@ -103,10 +103,10 @@ export default function DashboardFilters({
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label className={fieldClass}>
-          <span className="text-sm font-semibold text-slate-600">Tipo</span>
+        <div className="flex flex-col gap-2">
+          <span className={labelClass}>Tipo</span>
           <select
             value={selectedType}
             onChange={(event) => onTypeChange(event.target.value as 'all' | 'floodArea' | 'manhole')}
@@ -116,10 +116,10 @@ export default function DashboardFilters({
             <option value="floodArea">Alagamentos</option>
             <option value="manhole">Bueiros</option>
           </select>
-        </label>
+        </div>
 
-        <label className={fieldClass}>
-          <span className="text-sm font-semibold text-slate-600">Nivel</span>
+        <div className="flex flex-col gap-2">
+          <span className={labelClass}>Nivel</span>
           <select
             value={selectedLevel}
             onChange={(event) => onLevelChange(event.target.value as 'all' | NivelAlagamento)}
@@ -131,10 +131,10 @@ export default function DashboardFilters({
             <option value="medio">Medio</option>
             <option value="grave">Grave</option>
           </select>
-        </label>
+        </div>
 
-        <label className={`${fieldClass} md:col-span-2 xl:col-span-1`}>
-          <span className="text-sm font-semibold text-slate-600">Bairro</span>
+        <div className="flex flex-col gap-2 md:col-span-2 xl:col-span-1">
+          <span className={labelClass}>Bairro</span>
           <select
             value={selectedNeighborhood}
             onChange={(event) => onNeighborhoodChange(event.target.value)}
@@ -147,7 +147,7 @@ export default function DashboardFilters({
               </option>
             ))}
           </select>
-        </label>
+        </div>
       </div>
     </section>
   );

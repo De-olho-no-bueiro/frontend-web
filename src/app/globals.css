@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+@layer base {
+  a {
+    color: inherit;
+  }
+}
+
 :root {
   --background: #f6fbff;
   --foreground: #102338;
@@ -13,15 +19,46 @@
   --brand-navy-900: #17365f;
   --brand-water: #4caee8;
   --brand-white: #f8fdff;
+  /* Texto / hierarquia (uma família por página — evita #143454 vs #21548d vs #24649e) */
+  --brand-heading: #143454;
+  --brand-muted: #5a6c7a;
+  --brand-eyebrow: #29548d;
+  --brand-on-dark: #eff8ff;
+  /* CTAs primários: navy contínuo (evita azul “ciano” que destoava dos surfaces) */
+  --gradient-cta-from: #17365f;
+  --gradient-cta-to: #29548d;
+  --brand-footer-deep: #102c4a;
+  --brand-frame-dark: #0d243f;
+  /* Gradientes de faixa (manifesto, métricas, hero do dashboard) — paleta única */
+  --gradient-band-manifesto: linear-gradient(155deg, #0c3558 0%, #154a7a 38%, #1f6eb5 72%, #4caee8 100%);
+  --gradient-band-metrics: linear-gradient(120deg, #123a63 0%, #1a5082 40%, #246fbd 78%, #3d9fe0 100%);
+  --gradient-band-dashboard-hero: linear-gradient(135deg, #1c4f84 0%, #3898d5 54%, #83d7ff 100%);
+  --gradient-cta: linear-gradient(135deg, var(--gradient-cta-from) 0%, var(--gradient-cta-to) 100%);
+  /* Foco em controlos (alinhado ao accent, não blue-500 genérico) */
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--brand-sky-700) 24%, transparent);
   --surface: rgba(255, 255, 255, 0.84);
   --surface-strong: rgba(255, 255, 255, 0.96);
   --border-soft: rgba(148, 163, 184, 0.18);
   --shadow-soft: 0 24px 54px rgba(15, 23, 42, 0.08);
+  --chart-series-default: #0f766e;
+  /* Eixo de página (referência; classes em siteContentFrame.ts) */
+  --page-max-width: 1240px;
+  --section-y-lg: 4rem;
+  --section-y-xl: 5rem;
+  /* Superfícies UI (refactor visual — cores da marca mantidas) */
+  --ui-panel-shadow: 0 4px 28px color-mix(in srgb, var(--brand-navy-900) 7%, transparent);
+  --ui-header-divider: color-mix(in srgb, var(--brand-navy-900) 10%, transparent);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-heading: var(--brand-heading);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-eyebrow: var(--brand-eyebrow);
+  --color-brand-accent: var(--brand-sky-700);
+  --color-brand-on-dark: var(--brand-on-dark);
+  --color-brand-navy-900: var(--brand-navy-900);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -47,11 +84,7 @@ body {
 }
 
 *::selection {
-  background: rgba(88, 184, 244, 0.22);
-}
-
-a {
-  color: inherit;
+  background: color-mix(in srgb, var(--brand-sky-500) 28%, transparent);
 }
 
 button,
@@ -59,4 +92,39 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+/* Hero: ícones decorativos ao lado do mockup (acessível — desliga com prefers-reduced-motion) */
+@keyframes home-hero-icon-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+.home-hero-float-icon {
+  animation: home-hero-icon-float 2.85s ease-in-out infinite;
+  will-change: transform;
+}
+
+.home-hero-float-icon--delay-1 {
+  animation-delay: -0.35s;
+}
+
+.home-hero-float-icon--delay-2 {
+  animation-delay: -1.25s;
+}
+
+.home-hero-float-icon--delay-3 {
+  animation-delay: -2.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero-float-icon {
+    animation: none;
+    will-change: auto;
+  }
 }

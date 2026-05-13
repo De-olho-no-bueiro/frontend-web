@@ -25,13 +25,13 @@ export default function ExportBar({ floodAreas, manholes, selectedYear, selected
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-[1.3rem] border border-slate-200/70 bg-slate-50/80 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200/60 bg-slate-50/90 px-5 py-4 shadow-[var(--ui-panel-shadow)] ring-1 ring-slate-200/30">
       <div className="flex flex-col">
-        <span className="text-sm font-semibold text-slate-700">Exportacao de tabela</span>
-        <span className="text-xs leading-5 text-slate-500">CSV com linhas filtradas do painel. Acao pede confirmacao.</span>
+        <span className="text-sm font-semibold text-brand-heading">Exportacao de tabela</span>
+        <span className="text-xs leading-5 text-brand-muted">CSV com linhas filtradas do painel. Acao pede confirmacao.</span>
       </div>
       <button
-        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[linear-gradient(135deg,#17365f_0%,#2d7cc4_100%)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(23,54,95,0.18)] transition hover:-translate-y-px"
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl [background-image:var(--gradient-cta)] px-4 text-sm font-semibold text-[var(--brand-white)] shadow-[0_10px_22px_color-mix(in_srgb,var(--brand-navy-900)_16%,transparent)] transition hover:opacity-[0.96]"
         onClick={handleExport}
         title="Exportar tabela filtrada em CSV"
       >

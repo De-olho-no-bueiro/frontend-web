@@ -13,15 +13,3 @@ export async function fetchPublic(
 
   return fetch(buildApiUrl(endpoint), { ...options, headers });
 }
-
-export async function fetchWithAuth(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<Response> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
-  };
-
-  return fetch(buildApiUrl(endpoint), { ...options, headers, credentials: 'include' });
-}
