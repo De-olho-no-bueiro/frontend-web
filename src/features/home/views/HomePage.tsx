@@ -222,10 +222,12 @@ export default function HomePage() {
             {problemCards.map((item) => (
               <li key={item.title} className={uiPanelClass}>
                 <article className="flex h-full flex-col p-6 sm:p-7">
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 text-brand-navy-900 ring-1 ring-sky-200/70">
-                    {item.icon}
+                  <div className="mb-4 flex items-center gap-4">
+                    <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 text-brand-navy-900 ring-1 ring-sky-200/70">
+                      {item.icon}
+                    </div>
+                    <h3 className="m-0 text-lg font-bold tracking-tight text-brand-heading">{item.title}</h3>
                   </div>
-                  <h3 className="mb-2 text-lg font-bold tracking-tight text-brand-heading">{item.title}</h3>
                   <p className="m-0 flex-1 text-[0.95rem] leading-7 text-brand-muted">{item.description}</p>
                 </article>
               </li>
@@ -245,11 +247,13 @@ export default function HomePage() {
                 className="relative border-t border-slate-100 p-7 first:border-t-0 md:border-l md:border-t-0 md:first:border-l-0"
               >
                 <div className="flex flex-col gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-heading text-sm font-bold text-white shadow-md ring-4 ring-sky-100/80">
-                    {step.number}
-                  </span>
-                  <div className="text-brand-accent [&>svg]:opacity-90">{step.icon}</div>
-                  <h3 className="text-lg font-bold tracking-tight text-brand-heading">{step.title}</h3>
+                  <div className="flex items-center gap-4">
+                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-heading text-sm font-bold text-white shadow-md ring-4 ring-sky-100/80">
+                      {step.number}
+                    </span>
+                    <div className="shrink-0 text-brand-accent [&>svg]:opacity-90">{step.icon}</div>
+                    <h3 className="m-0 text-lg font-bold tracking-tight text-brand-heading">{step.title}</h3>
+                  </div>
                   <p className="m-0 text-[0.95rem] leading-7 text-brand-muted">{step.description}</p>
                 </div>
                 {idx < steps.length - 1 && (
@@ -364,16 +368,32 @@ export default function HomePage() {
           <div className={siteContentFrameClass}>
             <div className="grid items-start gap-12 lg:grid-cols-[minmax(220px,0.9fr)_1fr] lg:gap-16">
               <div className="flex justify-center lg:justify-start">
-                <div
-                  className={`relative aspect-[0.62] w-full max-w-[15rem] overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-b from-[var(--brand-navy-900)] to-[var(--brand-frame-dark)] ${uiPanelClass}`}
-                >
-                  <Image
-                    src="/assets/images/app-mapa-mobile.png"
-                    alt="Tela do aplicativo no celular com mapa, busca e filtros"
-                    fill
-                    sizes="(max-width: 980px) 260px, 300px"
-                    className="object-cover"
-                  />
+                <div className="relative aspect-[9/19.5] w-full max-w-[15rem]">
+                  <div className="relative h-full w-full rounded-[2.5rem] bg-gradient-to-b from-[#5c5c62] via-[#3a3a3d] to-[#1e1e20] p-[2.5px] shadow-2xl ring-1 ring-black/25">
+                    <div className="relative h-full w-full rounded-[2.35rem] bg-zinc-950 p-[5px]">
+                      <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-black ring-1 ring-black/70">
+                        <Image
+                          src="/assets/images/app-mapa-mobile.png"
+                          alt="Tela do aplicativo no celular com mapa, busca e filtros"
+                          fill
+                          sizes="(max-width: 980px) 260px, 300px"
+                          className="object-cover object-top"
+                        />
+                      </div>
+                      <div
+                        className="pointer-events-none absolute left-1/2 top-[10px] z-30 h-[26px] w-[min(42%,6.5rem)] -translate-x-1/2 rounded-full bg-black shadow-[inset_0_-2px_4px_rgba(0,0,0,0.65),0_2px_8px_rgba(0,0,0,0.35)]"
+                        aria-hidden
+                      />
+                      <div
+                        className="pointer-events-none absolute bottom-[9px] left-1/2 z-30 h-1 w-[28%] max-w-[5rem] -translate-x-1/2 rounded-full bg-white/35"
+                        aria-hidden
+                      />
+                    </div>
+                  </div>
+                  <div className="pointer-events-none absolute top-[22%] -left-[2px] z-20 h-7 w-[3px] rounded-l-sm bg-[#2a2a2d]" aria-hidden />
+                  <div className="pointer-events-none absolute top-[30%] -left-[2px] z-20 h-11 w-[3px] rounded-l-sm bg-[#2a2a2d]" aria-hidden />
+                  <div className="pointer-events-none absolute top-[42%] -left-[2px] z-20 h-11 w-[3px] rounded-l-sm bg-[#2a2a2d]" aria-hidden />
+                  <div className="pointer-events-none absolute top-[20%] -right-[2px] z-20 h-14 w-[3px] rounded-r-sm bg-[#2a2a2d]" aria-hidden />
                 </div>
               </div>
 
@@ -450,8 +470,8 @@ export default function HomePage() {
                   <Link href="/dashboard" className="text-brand-on-dark/85 transition hover:text-white">
                     Dashboard
                   </Link>
-                  <Link href="/#solucao" className="text-brand-on-dark/85 transition hover:text-white">
-                    Solução
+                  <Link href="/como-usar" className="text-brand-on-dark/85 transition hover:text-white">
+                    Como Usar
                   </Link>
                   <Link href="/#sobre" className="text-brand-on-dark/85 transition hover:text-white">
                     Sobre

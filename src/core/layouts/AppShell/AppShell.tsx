@@ -13,7 +13,7 @@ const headerRowClass = `${siteContentFrameClass} flex flex-col gap-4 py-3.5 md:f
 const primaryLinks = [
   { href: '/', label: 'Início' },
   { href: '/dashboard', label: 'Dashboard' },
-  { href: '/#solucao', label: 'Solução' },
+  { href: '/como-usar', label: 'Como Usar' },
   { href: '/#sobre', label: 'Sobre' },
 ];
 
@@ -55,7 +55,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {primaryLinks.map((link) => {
               const isActive =
                 (link.href === '/' && pathname === '/') ||
-                (link.href === '/dashboard' && pathname.startsWith('/dashboard'));
+                (link.href === '/dashboard' && pathname.startsWith('/dashboard')) ||
+                (link.href === '/como-usar' && pathname.startsWith('/como-usar'));
 
               return (
                 <Link
