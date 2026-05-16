@@ -21,8 +21,6 @@ Notas:
   - `GET /api/public/v1/flood-areas`
   - `GET /api/public/v1/manholes`
   - `GET /api/public/v1/reportes`
-- login opcional para futuras acoes pessoais:
-  - `POST /api/web/v1/auth/login`
 - mock agora so liga se `NEXT_PUBLIC_MOCK_ENABLED=true`
 
 ## Subir projeto
@@ -40,7 +38,6 @@ Abra `http://localhost:3000`.
 2. configurar `NEXT_PUBLIC_API_URL`
 3. abrir `/`
 4. navegar no portal publico
-5. opcional: usar `/login` para sessao de cidadao
 
 ## Exportacao
 

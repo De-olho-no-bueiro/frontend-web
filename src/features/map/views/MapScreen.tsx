@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import { Layers3, LogIn, LogOut, MapPinned, TableProperties } from 'lucide-react';
+import { ArrowLeft, Layers3, TableProperties } from 'lucide-react';
 import DashboardCharts from '@/features/map/components/analytics/DashboardCharts';
 import DashboardFilters from '@/features/map/components/analytics/DashboardFilters';
 import DashboardStats from '@/features/map/components/analytics/DashboardStats';
@@ -28,18 +28,62 @@ import {
   type SortConfig,
   type SortKey,
 } from '@/features/map/utils/occurrenceUtils';
-import { useAuth } from '@/core/contexts/auth-context';
+import { siteContentFrameClass } from '@/core/layouts/siteContentFrame';
+import { focusRingBrandClass } from '@/core/styles/focusRing';
 import { fetchPublic } from '@/core/utils/api';
 
 const MapView = dynamic(() => import('@/core/components/organisms/MapView'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center text-sm text-slate-500">Carregando mapa...</div>
+    <div className="flex h-full w-full items-center justify-center text-sm text-brand-muted">Carregando mapa...</div>
   ),
 });
 
 const mapCenter = MOCK_CENTER;
 const mapZoom = MOCK_ZOOM;
+
+type FloodAreaApiRecord = {
+  id: string | number;
+  coordinates?: unknown;
+  nivel?: string;
+  descricao?: string;
+  name?: string;
+  endereco?: string;
+  createdAt?: string;
+};
+
+type ManholeApiRecord = {
+  id: string | number;
+  latitude: number;
+  longitude: number;
+  descricao?: string;
+  name?: string;
+  endereco?: string;
+  createdAt?: string;
+};
+
+function mapFloodAreaFromApi(area: FloodAreaApiRecord): FloodArea {
+  const coords = Array.isArray(area.coordinates) ? area.coordinates : [];
+  return {
+    id: `area-${area.id}`,
+    coordinates: coords as FloodArea['coordinates'],
+    nivel: (area.nivel as FloodArea['nivel']) || 'medio',
+    descricao: area.descricao || area.name,
+    endereco: area.endereco,
+    dataHora: area.createdAt ?? '',
+  };
+}
+
+function mapManholeFromApi(manhole: ManholeApiRecord): Manhole {
+  return {
+    id: `mh-${manhole.id}`,
+    latitude: manhole.latitude,
+    longitude: manhole.longitude,
+    descricao: manhole.descricao || manhole.name,
+    endereco: manhole.endereco,
+    dataHora: manhole.createdAt ?? '',
+  };
+}
 
 function getInitialYear(occurrences: Occurrence[]) {
   if (occurrences.length === 0) return new Date().getUTCFullYear();
@@ -54,8 +98,7 @@ function toMapData(items: Occurrence[]) {
 }
 
 export default function MapScreen() {
-  const router = useRouter();
-  const { user, signOut } = useAuth();
+  const mapFocusSeq = useRef(0);
   const [allFloodAreas, setAllFloodAreas] = useState<FloodArea[]>([]);
   const [allManholes, setAllManholes] = useState<Manhole[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,9 +122,11 @@ export default function MapScreen() {
   useEffect(() => {
     const isMock = process.env.NEXT_PUBLIC_MOCK_ENABLED === 'true';
     if (isMock) {
-      setAllFloodAreas(MOCK_FLOOD_AREAS);
-      setAllManholes(MOCK_MANHOLES);
-      setIsLoading(false);
+      queueMicrotask(() => {
+        setAllFloodAreas(MOCK_FLOOD_AREAS);
+        setAllManholes(MOCK_MANHOLES);
+        setIsLoading(false);
+      });
       return;
     }
 
@@ -101,25 +146,12 @@ export default function MapScreen() {
           );
         }
 
-        const [areasRaw, manholesRaw] = await Promise.all([respAreas.json(), respManholes.json()]);
+        const [areasJson, manholesJson] = await Promise.all([respAreas.json(), respManholes.json()]);
+        const areasRaw = Array.isArray(areasJson) ? (areasJson as FloodAreaApiRecord[]) : [];
+        const manholesRaw = Array.isArray(manholesJson) ? (manholesJson as ManholeApiRecord[]) : [];
 
-        const areasMapped: FloodArea[] = areasRaw.map((area: any) => ({
-          id: `area-${area.id}`,
-          coordinates: Array.isArray(area.coordinates) ? area.coordinates : [],
-          nivel: area.nivel || 'medio',
-          descricao: area.descricao || area.name,
-          endereco: area.endereco,
-          dataHora: area.createdAt,
-        }));
-
-        const manholesMapped: Manhole[] = manholesRaw.map((manhole: any) => ({
-          id: `mh-${manhole.id}`,
-          latitude: manhole.latitude,
-          longitude: manhole.longitude,
-          descricao: manhole.descricao || manhole.name,
-          endereco: manhole.endereco,
-          dataHora: manhole.createdAt,
-        }));
+        const areasMapped = areasRaw.map(mapFloodAreaFromApi);
+        const manholesMapped = manholesRaw.map(mapManholeFromApi);
 
         setAllFloodAreas(areasMapped);
         setAllManholes(manholesMapped);
@@ -131,16 +163,18 @@ export default function MapScreen() {
       }
     }
 
-    loadData();
+    void loadData();
   }, []);
 
   const allOccurrences = useMemo(() => normalizeOccurrences(allFloodAreas, allManholes), [allFloodAreas, allManholes]);
 
   useEffect(() => {
     if (allOccurrences.length === 0) return;
-    setFilters((current) => {
-      if (current.year !== new Date().getUTCFullYear()) return current;
-      return { ...current, year: getInitialYear(allOccurrences) };
+    queueMicrotask(() => {
+      setFilters((current) => {
+        if (current.year !== new Date().getUTCFullYear()) return current;
+        return { ...current, year: getInitialYear(allOccurrences) };
+      });
     });
   }, [allOccurrences]);
 
@@ -178,15 +212,19 @@ export default function MapScreen() {
   const visibleMapData = useMemo(() => toMapData(filteredOccurrences), [filteredOccurrences]);
   const currentPageData = useMemo(() => toMapData(paginatedOccurrences), [paginatedOccurrences]);
 
-  useEffect(() => setCurrentPage(1), [filters, searchQuery, selectedNeighborhood, pageSize]);
   useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
+    queueMicrotask(() => setCurrentPage(1));
+  }, [filters, searchQuery, selectedNeighborhood, pageSize]);
+  useEffect(() => {
+    queueMicrotask(() => {
+      if (currentPage > totalPages) setCurrentPage(totalPages);
+    });
   }, [currentPage, totalPages]);
 
   useEffect(() => {
     if (!selectedOccurrenceId) return;
     const exists = filteredOccurrences.some((item) => item.id === selectedOccurrenceId);
-    if (!exists) setSelectedOccurrenceId(null);
+    if (!exists) queueMicrotask(() => setSelectedOccurrenceId(null));
   }, [filteredOccurrences, selectedOccurrenceId]);
 
   const handleSort = (key: SortKey) => {
@@ -198,7 +236,12 @@ export default function MapScreen() {
 
   const focusOccurrence = (occurrence: Occurrence) => {
     setSelectedOccurrenceId(occurrence.id);
-    setMapFocus({ latitude: occurrence.latitude, longitude: occurrence.longitude, timestamp: Date.now() });
+    mapFocusSeq.current += 1;
+    setMapFocus({
+      latitude: occurrence.latitude,
+      longitude: occurrence.longitude,
+      timestamp: mapFocusSeq.current,
+    });
     if (window.innerWidth < 768) window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -240,50 +283,72 @@ export default function MapScreen() {
     setSelectedOccurrenceId(null);
   };
 
-  const handleSessionAction = () => {
-    if (user) {
-      void signOut();
-      router.push('/');
-      return;
-    }
-    router.push('/login');
-  };
-
   if (isLoading) {
     return (
-      <div className="flex min-h-[calc(100vh-7rem)] items-center justify-center text-sm text-slate-500">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        className={`${siteContentFrameClass} flex min-h-[calc(100vh-7rem)] items-center justify-center px-1 py-12 text-sm text-brand-muted`}
+      >
         Sincronizando dados do painel...
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-7rem)] w-[min(1240px,calc(100%-2rem))] flex-col gap-4 py-8 max-sm:w-[min(1240px,calc(100%-1rem))] max-sm:pt-5">
-      <section className="flex flex-wrap items-end justify-between gap-6 rounded-[1.8rem] bg-[linear-gradient(135deg,#1c4f84_0%,#3898d5_54%,#83d7ff_100%)] p-7 text-slate-50 shadow-[0_24px_54px_rgba(45,95,158,0.22)]">
-        <div>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">Frontend Web</p>
-          <h1 className="m-0 text-[clamp(1.8rem,3.2vw,3rem)] tracking-[-0.04em]">Central de leitura de ocorrencias</h1>
-          <p className="mt-3 max-w-3xl leading-7 text-white/90">
-            Explore alagamentos e bueiros por periodo, severidade, bairro e texto. Tudo sincronizado entre dashboard, mapa e tabela.
-          </p>
-        </div>
+    <div className="w-full min-w-0 overflow-x-hidden pb-12">
+      <section
+        className="relative w-full border-b border-[var(--ui-header-divider)] py-10 text-slate-50 sm:py-12"
+        aria-labelledby="titulo-dashboard-hero"
+      >
+        <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-dashboard-hero)]" aria-hidden />
+        <div className={`relative ${siteContentFrameClass}`}>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-12">
+            <div className="max-w-3xl border-l-[3px] border-white/90 pl-5 sm:pl-6">
+              <p className="m-0 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-white/90">Frontend Web</p>
+              <h1 id="titulo-dashboard-hero" className="mt-4 m-0 text-[clamp(1.7rem,3vw,2.75rem)] font-bold tracking-[-0.035em] text-white">
+                Central de leitura de ocorrencias
+              </h1>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-white/90 sm:text-lg">
+                Explore alagamentos e bueiros por periodo, severidade, bairro e texto. Tudo sincronizado entre dashboard,
+                mapa e tabela.
+              </p>
+            </div>
 
-        <div className="flex flex-col gap-3">
-          <span className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/12 px-4 py-3 text-sm">{user ? `Cidadao conectado: ${user.name}` : 'Acesso publico liberado'}</span>
-          <span className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/12 px-4 py-3 text-sm">Atualizacao mais recente: {latestUpdateLabel}</span>
-          <span className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/12 px-4 py-3 text-sm">Base ativa: {filteredOccurrences.length} registros</span>
-          <button
-            type="button"
-            className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-[#17365f]/35 px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-px"
-            onClick={handleSessionAction}
-          >
-            {user ? <LogOut size={16} /> : <LogIn size={16} />}
-            {user ? 'Sair da sessao' : 'Entrar como cidadao'}
-          </button>
+            <div className="flex flex-col gap-6 lg:items-end lg:text-right">
+              <dl className="m-0 space-y-3 text-sm leading-relaxed text-white/90">
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2 lg:flex-col lg:items-end">
+                  <dt className="shrink-0 font-semibold text-white">Leitura</dt>
+                  <dd className="m-0">Dados públicos em leitura aberta</dd>
+                </div>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2 lg:flex-col lg:items-end">
+                  <dt className="shrink-0 font-semibold text-white">Atualizacao</dt>
+                  <dd className="m-0">{latestUpdateLabel}</dd>
+                </div>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2 lg:flex-col lg:items-end">
+                  <dt className="shrink-0 font-semibold text-white">Recorte</dt>
+                  <dd className="m-0">{filteredOccurrences.length} registros na base ativa</dd>
+                </div>
+              </dl>
+              <Link
+                href="/"
+                className="inline-flex w-fit items-center gap-2 rounded-xl border border-white/40 bg-[color-mix(in_srgb,var(--brand-navy-900)_38%,transparent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm backdrop-blur-[2px] transition hover:bg-[color-mix(in_srgb,var(--brand-navy-900)_55%,transparent)]"
+              >
+                <ArrowLeft size={16} />
+                Voltar ao inicio
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      {loadError && <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 font-semibold text-red-800">{loadError}</div>}
+      <div className={`${siteContentFrameClass} flex min-h-0 flex-col gap-8 pt-8 sm:gap-10 sm:pt-10`}>
+      {loadError && (
+        <div role="alert" className="border-l-4 border-red-600 bg-red-50/95 px-5 py-4 text-sm font-semibold text-red-900 ring-1 ring-red-200/50">
+          {loadError}
+        </div>
+      )}
 
       <DashboardStats cards={statsCards} onSelect={handleStatSelect} />
 
@@ -316,10 +381,12 @@ export default function MapScreen() {
         onNeighborhoodSelect={(value) => setSelectedNeighborhood((current) => (current === value ? 'all' : value))}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-slate-200/70 bg-white/95 p-5 shadow-[0_20px_40px_rgba(45,95,158,0.1)]">
-        <div>
-          <h2 className="m-0 text-2xl tracking-[-0.03em] text-slate-900">Mapa operacional</h2>
-          <p className="mt-1 text-slate-500">
+      <section className="flex flex-col gap-4 border-b border-slate-200/60 pb-6 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between" aria-labelledby="titulo-mapa-operacional">
+        <div className="min-w-0 flex-1">
+          <h2 id="titulo-mapa-operacional" className="m-0 text-2xl font-bold tracking-[-0.03em] text-brand-heading">
+            Mapa operacional
+          </h2>
+          <p className="mt-1 max-w-2xl text-brand-muted">
             Recorte ativo aplicado em tempo real. Clique em linha, card ou grafico e o foco vai para mapa.
           </p>
         </div>
@@ -329,9 +396,9 @@ export default function MapScreen() {
           selectedYear={filters.year}
           selectedMonth={filters.month}
         />
-      </div>
+      </section>
 
-      <div className="relative h-[64vh] min-h-[28rem] overflow-hidden rounded-[1.6rem] border border-slate-200/70 shadow-[0_24px_54px_rgba(45,95,158,0.14)] max-sm:min-h-[22rem] max-sm:h-[54vh]">
+      <div className="relative h-[min(64vh,32rem)] min-h-[20rem] w-full overflow-hidden rounded-2xl border border-slate-200/60 shadow-[var(--ui-panel-shadow)] ring-1 ring-slate-200/30 sm:min-h-[24rem] md:min-h-[28rem] md:h-[64vh]">
         <MapView
           center={mapCenter}
           zoom={mapZoom}
@@ -343,61 +410,75 @@ export default function MapScreen() {
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.2rem] border border-slate-200/70 bg-white/85 px-5 py-4 text-slate-900">
-        <div>
-          <strong>Selecao atual:</strong>{' '}
-          {selectedOccurrence ? `${selectedOccurrence.title} · ${selectedOccurrence.address}` : 'nenhuma'}
-        </div>
-        <div className="flex flex-wrap gap-4 text-sm text-slate-600">
-          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-teal-700" /> Alagamentos</span>
-          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-sky-400" /> Bueiros</span>
-          <span className="inline-flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-[#29548d]" /> Grave</span>
-        </div>
+      <div className="flex flex-col gap-3 border-y border-slate-200/60 py-5 text-brand-heading sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <p className="m-0 text-sm sm:text-base">
+          <span className="font-semibold text-brand-heading">Selecao atual:</span>{' '}
+          <span className="text-brand-muted">
+            {selectedOccurrence ? `${selectedOccurrence.title} · ${selectedOccurrence.address}` : 'nenhuma'}
+          </span>
+        </p>
+        <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-1 p-0 text-sm text-brand-muted" aria-label="Legenda de cores no mapa">
+          <li className="inline-flex items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-sm bg-teal-700" aria-hidden /> Alagamentos
+          </li>
+          <li className="inline-flex items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-sm bg-sky-400" aria-hidden /> Bueiros
+          </li>
+          <li className="inline-flex items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-sm bg-brand-eyebrow" aria-hidden /> Grave
+          </li>
+        </ul>
       </div>
 
-      <div className="flex gap-2 max-sm:flex-col">
+      <div
+        className="inline-flex w-fit gap-1 rounded-xl border border-slate-200/70 bg-slate-50/90 p-1 ring-1 ring-slate-200/25 max-sm:w-full max-sm:flex-col"
+        role="group"
+        aria-label="Modo de visualizacao"
+      >
         <button
+          type="button"
+          aria-pressed={viewMode === 'cards'}
           className={[
-            'inline-flex min-h-[42px] items-center justify-center rounded-full border px-4 font-bold transition',
-            viewMode === 'cards'
-              ? 'border-[#29548d] bg-[#29548d] text-slate-50'
-              : 'border-slate-300 bg-white/95 text-slate-700',
+            'inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition',
+            viewMode === 'cards' ? 'bg-white text-brand-eyebrow shadow-sm ring-1 ring-slate-200/40' : 'text-brand-muted hover:text-brand-heading',
           ].join(' ')}
           onClick={() => setViewMode('cards')}
           title="Visualizacao em cards"
         >
-          <Layers3 size={16} className="mr-2" />
+          <Layers3 size={16} />
           Cards
         </button>
         <button
+          type="button"
+          aria-pressed={viewMode === 'table'}
           className={[
-            'inline-flex min-h-[42px] items-center justify-center rounded-full border px-4 font-bold transition',
-            viewMode === 'table'
-              ? 'border-[#29548d] bg-[#29548d] text-slate-50'
-              : 'border-slate-300 bg-white/95 text-slate-700',
+            'inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition',
+            viewMode === 'table' ? 'bg-white text-brand-eyebrow shadow-sm ring-1 ring-slate-200/40' : 'text-brand-muted hover:text-brand-heading',
           ].join(' ')}
           onClick={() => setViewMode('table')}
           title="Visualizacao em tabela"
         >
-          <TableProperties size={16} className="mr-2" />
+          <TableProperties size={16} />
           Tabela
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 pb-8">
+      <section className="flex flex-col gap-4 pb-8" aria-labelledby="titulo-ocorrencias-vista">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="m-0 text-2xl tracking-[-0.03em] text-slate-900">{viewMode === 'table' ? 'Tabela detalhada' : 'Lista navegavel'}</h2>
-            <p className="mt-1 text-slate-500">{filteredOccurrences.length} resultados no recorte atual.</p>
+          <div className="min-w-0">
+            <h2 id="titulo-ocorrencias-vista" className="m-0 text-2xl font-bold tracking-[-0.03em] text-brand-heading">
+              {viewMode === 'table' ? 'Tabela detalhada' : 'Lista navegavel'}
+            </h2>
+            <p className="mt-1 text-brand-muted">{filteredOccurrences.length} resultados no recorte atual.</p>
           </div>
 
-          <div className="flex flex-col gap-2 text-sm text-slate-600">
-            <label htmlFor="pageSizeSelect" className="font-medium">Itens por pagina</label>
+          <div className="flex flex-col gap-2 text-sm text-brand-muted">
+            <label htmlFor="pageSizeSelect" className="font-medium text-brand-heading">Itens por pagina</label>
             <select
               id="pageSizeSelect"
               value={pageSize}
               onChange={(event) => setPageSize(Number(event.target.value))}
-              className="rounded-xl border border-slate-300/70 bg-white px-3 py-2 outline-none transition focus:border-blue-500 focus:shadow-[0_0_0_3px_rgba(88,184,244,0.18)]"
+              className={`rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-brand-heading ${focusRingBrandClass}`}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -409,7 +490,10 @@ export default function MapScreen() {
         </div>
 
         {filteredOccurrences.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200/70 bg-white/95 px-5 py-4 text-slate-600">
+          <div
+            role="status"
+            className="rounded-2xl border border-slate-200/60 bg-slate-50/90 px-5 py-4 text-sm text-brand-muted ring-1 ring-slate-200/25"
+          >
             Nenhuma ocorrencia encontrada com filtros atuais. Tente limpar filtros ou trocar periodo.
           </div>
         ) : viewMode === 'table' ? (
@@ -422,7 +506,8 @@ export default function MapScreen() {
                 focusOccurrence(occurrence);
                 return;
               }
-              setMapFocus({ latitude, longitude, timestamp: Date.now() });
+              mapFocusSeq.current += 1;
+              setMapFocus({ latitude, longitude, timestamp: mapFocusSeq.current });
             }}
             sortConfig={sortConfig}
             onSort={handleSort}
@@ -450,31 +535,36 @@ export default function MapScreen() {
             )}
           </div>
         )}
-      </div>
+      </section>
 
       {filteredOccurrences.length > 0 && (
         <div className="flex items-center justify-center gap-8 pb-12 max-sm:gap-4">
           <button
+            type="button"
             disabled={currentPage === 1}
+            aria-label="Ir para a página anterior de ocorrências"
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl border border-slate-200/80 bg-white px-5 py-2 text-sm font-medium text-brand-heading shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Anterior
           </button>
 
-          <div className="text-sm text-slate-600">
+          <div className="text-sm text-brand-muted">
             Pagina <strong>{currentPage}</strong> de {totalPages}
           </div>
 
           <button
+            type="button"
             disabled={currentPage === totalPages}
+            aria-label="Ir para a próxima página de ocorrências"
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl border border-slate-200/80 bg-white px-5 py-2 text-sm font-medium text-brand-heading shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Proxima
           </button>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { focusRingBrandClass } from '@/core/styles/focusRing';
 import { MONTH_NAMES } from '@/features/map/utils/exportUtils';
 
 interface MonthFilterProps {
@@ -19,8 +20,7 @@ export default function MonthFilter({
   onYearChange,
   onMonthChange,
 }: MonthFilterProps) {
-  const selectClass =
-    'w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:shadow-[0_0_0_3px_rgba(88,184,244,0.18)]';
+  const selectClass = `w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 text-sm text-slate-700 ${focusRingBrandClass}`;
 
   return (
     <div className="flex flex-wrap gap-4">
