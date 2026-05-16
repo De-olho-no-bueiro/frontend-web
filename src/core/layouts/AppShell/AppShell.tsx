@@ -37,8 +37,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 w-full border-b border-[var(--ui-header-divider)] bg-white/92 backdrop-blur-md">
         <div className={headerRowClass}>
           <Link href="/" className="inline-flex min-w-0 items-center gap-3 shrink-0" aria-label="Pagina inicial De Olho no Bueiro">
-            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white to-sky-100 ring-1 ring-slate-200/70 sm:h-12 sm:w-12">
-              <Image src="/assets/images/branding/logo-tab.svg" alt="" width={44} height={44} priority />
+            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-white to-sky-100 ring-1 ring-slate-200/70 sm:h-12 sm:w-12 overflow-hidden">
+              <Image src="/assets/images/novo-logo.png" alt="De Olho no Bueiro Logo" width={44} height={44} priority className="scale-125 object-cover" />
             </span>
             <span className="flex min-w-0 flex-col gap-0.5">
               <strong className="text-base font-semibold tracking-tight text-slate-950">De Olho no Bueiro</strong>

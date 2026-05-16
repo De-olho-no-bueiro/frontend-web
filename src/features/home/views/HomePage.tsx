@@ -19,6 +19,8 @@ import {
   problemCards,
   steps,
 } from '@/features/home/content/homeContent';
+import { AndroidDownloadButton } from '@/features/home/components/AndroidDownloadButton';
+import { IosDownloadButton } from '@/features/home/components/IosDownloadButton';
 
 const sectionY = 'py-12 sm:py-16 lg:py-20';
 
@@ -364,7 +366,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={`w-full border-b border-slate-200/55 ${sectionY}`}>
+        <section id="download-app" className={`w-full border-b border-slate-200/55 ${sectionY}`}>
           <div className={siteContentFrameClass}>
             <div className="grid items-start gap-12 lg:grid-cols-[minmax(220px,0.9fr)_1fr] lg:gap-16">
               <div className="flex justify-center lg:justify-start">
@@ -407,20 +409,8 @@ export default function HomePage() {
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <div className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-gradient-to-br from-[var(--brand-navy-900)] to-[var(--brand-navy-700)] px-4 py-2.5 text-white shadow-md">
-                    <Play size={18} fill="currentColor" />
-                    <div>
-                      <span className="block text-[0.62rem] uppercase tracking-wide text-white/70">Disponível no</span>
-                      <strong className="text-sm">Google Play</strong>
-                    </div>
-                  </div>
-                  <div className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-gradient-to-br from-[var(--brand-navy-900)] to-[var(--brand-navy-700)] px-4 py-2.5 text-white shadow-md">
-                    <Apple size={18} fill="currentColor" />
-                    <div>
-                      <span className="block text-[0.62rem] uppercase tracking-wide text-white/70">Disponível na</span>
-                      <strong className="text-sm">App Store</strong>
-                    </div>
-                  </div>
+                  <AndroidDownloadButton />
+                  <IosDownloadButton />
                 </div>
 
                 <ul className="mt-10 divide-y divide-slate-100 border-t border-slate-100">
@@ -449,8 +439,8 @@ export default function HomePage() {
         <div className={`${siteContentFrameClass} py-12 sm:py-14`}>
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
             <div className="flex gap-4 lg:col-span-4">
-              <div className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15">
-                <Image src="/assets/images/branding/logo-tab.svg" alt="" width={40} height={40} />
+              <div className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15 overflow-hidden">
+                <Image src="/assets/images/novo-logo.png" alt="De Olho no Bueiro Logo" width={40} height={40} className="scale-125 object-cover" />
               </div>
               <div>
                 <strong className="block text-lg font-bold text-white">De Olho no Bueiro</strong>
