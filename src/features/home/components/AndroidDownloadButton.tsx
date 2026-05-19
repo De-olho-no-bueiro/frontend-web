@@ -12,7 +12,7 @@ export function AndroidDownloadButton() {
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
-        className="group inline-flex min-h-16 items-center gap-4 rounded-2xl border border-sky-400/40 bg-gradient-to-br from-sky-500 to-sky-600 px-7 py-3 text-white shadow-[0_8px_30px_-4px_rgba(14,165,233,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_-4px_rgba(14,165,233,0.5)] active:scale-[0.98]"
+        className="group inline-flex min-h-16 items-center gap-4 rounded-2xl border border-sky-400/40 bg-gradient-to-br from-sky-500 to-sky-600 px-7 py-3 text-white shadow-[0_8px_30px_-4px_rgba(14,165,233,0.4)] transition-all hover:cursor-pointer hover:-translate-y-1 hover:shadow-[0_12px_40px_-4px_rgba(14,165,233,0.5)] active:scale-[0.98]"
       >
         <div className="rounded-full bg-white/20 p-2 transition-transform group-hover:scale-110">
           <Download size={26} className="text-white" />

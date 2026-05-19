@@ -14,7 +14,7 @@ const primaryLinks = [
   { href: '/', label: 'Início' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/como-usar', label: 'Como Usar' },
-  { href: '/#sobre', label: 'Sobre' },
+  { href: '/sobre', label: 'Sobre' },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -56,7 +56,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               const isActive =
                 (link.href === '/' && pathname === '/') ||
                 (link.href === '/dashboard' && pathname.startsWith('/dashboard')) ||
-                (link.href === '/como-usar' && pathname.startsWith('/como-usar'));
+                (link.href === '/como-usar' && pathname.startsWith('/como-usar')) ||
+                (link.href === '/sobre' && pathname.startsWith('/sobre'));
 
               return (
                 <Link
