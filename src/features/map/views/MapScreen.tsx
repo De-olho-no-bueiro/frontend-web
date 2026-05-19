@@ -138,17 +138,26 @@ export default function MapScreen() {
           fetchPublic('/api/public/v1/manholes'),
         ]);
 
-        if (!respAreas.ok || !respManholes.ok) {
-          const areasError = await respAreas.text().catch(() => '');
-          const manholesError = await respManholes.text().catch(() => '');
-          throw new Error(
-            `Nao foi possivel sincronizar dados do painel. areas=${respAreas.status} manholes=${respManholes.status} ${areasError} ${manholesError}`.trim(),
-          );
+        let areasRaw: FloodAreaApiRecord[] = [];
+        let manholesRaw: ManholeApiRecord[] = [];
+
+        if (respAreas.ok) {
+          const areasJson = await respAreas.json().catch(() => []);
+          areasRaw = Array.isArray(areasJson) ? areasJson : [];
+        } else {
+          console.error('Falha ao carregar areas de alagamento:', await respAreas.text().catch(() => ''));
         }
 
-        const [areasJson, manholesJson] = await Promise.all([respAreas.json(), respManholes.json()]);
-        const areasRaw = Array.isArray(areasJson) ? (areasJson as FloodAreaApiRecord[]) : [];
-        const manholesRaw = Array.isArray(manholesJson) ? (manholesJson as ManholeApiRecord[]) : [];
+        if (respManholes.ok) {
+          const manholesJson = await respManholes.json().catch(() => []);
+          manholesRaw = Array.isArray(manholesJson) ? manholesJson : [];
+        } else {
+          console.error('Falha ao carregar bueiros:', await respManholes.text().catch(() => ''));
+        }
+
+        if (!respAreas.ok && !respManholes.ok) {
+          throw new Error('Não foi possível sincronizar os dados do painel para áreas e bueiros.');
+        }
 
         const areasMapped = areasRaw.map(mapFloodAreaFromApi);
         const manholesMapped = manholesRaw.map(mapManholeFromApi);
