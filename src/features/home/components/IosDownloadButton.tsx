@@ -12,7 +12,7 @@ export function IosDownloadButton() {
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
-        className="group inline-flex min-h-16 items-center gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 px-7 py-3 text-white shadow-[0_8px_30px_-4px_rgba(0,0,0,0.3)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_40px_-4px_rgba(0,0,0,0.4)] active:scale-[0.98]"
+        className="group inline-flex min-h-16 items-center gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 px-7 py-3 text-white shadow-[0_8px_30px_-4px_rgba(0,0,0,0.3)] transition-all hover:cursor-pointer hover:-translate-y-1 hover:shadow-[0_12px_40px_-4px_rgba(0,0,0,0.4)] active:scale-[0.98]"
       >
         <div className="rounded-full bg-white/10 p-2 transition-transform group-hover:scale-110">
           <Apple size={26} fill="currentColor" />
