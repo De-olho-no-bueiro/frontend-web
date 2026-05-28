@@ -33,6 +33,7 @@
   --gradient-band-manifesto: linear-gradient(155deg, #0c3558 0%, #154a7a 38%, #1f6eb5 72%, #4caee8 100%);
   --gradient-band-metrics: linear-gradient(120deg, #123a63 0%, #1a5082 40%, #246fbd 78%, #3d9fe0 100%);
   --gradient-band-dashboard-hero: linear-gradient(135deg, #1c4f84 0%, #3898d5 54%, #83d7ff 100%);
+  --gradient-band-form: linear-gradient(135deg, #35115a 0%, #552184 42%, #7f35b5 72%, #b06bf3 100%);
   --gradient-cta: linear-gradient(135deg, var(--gradient-cta-from) 0%, var(--gradient-cta-to) 100%);
   /* Foco em controlos (alinhado ao accent, não blue-500 genérico) */
   --focus-ring: 0 0 0 3px color-mix(in srgb, var(--brand-sky-700) 24%, transparent);
@@ -105,6 +106,15 @@ textarea {
   }
 }
 
+@keyframes home-beta-marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .home-hero-float-icon {
   animation: home-hero-icon-float 2.85s ease-in-out infinite;
   will-change: transform;
@@ -122,9 +132,31 @@ textarea {
   animation-delay: -2.1s;
 }
 
+.home-beta-marquee {
+  display: flex;
+  overflow: hidden;
+}
+
+.home-beta-marquee-track {
+  display: inline-flex;
+  min-width: max-content;
+  align-items: center;
+  animation: home-beta-marquee-scroll 26s linear infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-hero-float-icon {
     animation: none;
+    will-change: auto;
+  }
+
+  .home-beta-marquee-track {
+    animation: none;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: 100%;
     will-change: auto;
   }
 }

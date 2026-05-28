@@ -106,8 +106,8 @@ export const audiences: IconContentItem[] = [
 ];
 
 export const metrics = [
-  { value: '2.500+', label: 'Cidadãos ativos' },
-  { value: '1.200+', label: 'Ocorrências registradas' },
+  { value: '50+', label: 'Cidadãos ativos' },
+  { value: '20+', label: 'Ocorrências registradas' },
   { value: '850+', label: 'Áreas monitoradas' },
   { value: '98%', label: 'Satisfação dos usuários' },
 ];

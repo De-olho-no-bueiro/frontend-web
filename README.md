@@ -1,12 +1,34 @@
 # De Olho no Bueiro Web
 
-Portal web publico em Next.js para leitura de ocorrencias de alagamento e bueiros.
+Portal público em Next.js para visualizar ocorrências de alagamento e bueiros, entender o projeto e acompanhar dados consolidados em mapa e dashboard.
 
-## Ambiente
+## O que este projeto entrega
+
+- Página inicial institucional
+- Página sobre o projeto
+- Guia de uso
+- Dashboard público com mapa, filtros, cards, tabela e exportação CSV
+- Consumo de endpoints públicos do backend via rotas internas do Next
+
+## Stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Leaflet e Google Maps
+
+## Requisitos
+
+- Node.js 20+
+- npm 10+
+- Backend rodando em `http://localhost:3001/api`
+
+## Variáveis de ambiente
 
 Crie `.env.local` a partir de `.env.example`.
 
-```bash
+```env
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 BACKEND_API_URL=http://localhost:3001/api
 NEXT_PUBLIC_MOCK_ENABLED=false
@@ -14,31 +36,88 @@ NEXT_PUBLIC_MOCK_ENABLED=false
 
 Notas:
 
-- backend Nest usa prefixo global `/api`
-- em desenvolvimento local, rode backend em `3001` para nao conflitar com Next em `3000`
-- frontend agora usa proxy interno do Next para evitar erro de CORS/mixed content no navegador
-- leitura publica:
-  - `GET /api/public/v1/flood-areas`
-  - `GET /api/public/v1/manholes`
-  - `GET /api/public/v1/reportes`
-- mock agora so liga se `NEXT_PUBLIC_MOCK_ENABLED=true`
+- O backend Nest usa prefixo global `/api`
+- `BACKEND_API_URL` é usado pelas rotas internas do Next
+- `NEXT_PUBLIC_MOCK_ENABLED=true` ativa dados mockados no mapa
 
-## Subir projeto
+## Como rodar localmente
+
+1. Instale dependências:
 
 ```bash
 npm install
+```
+
+2. Configure o ambiente:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Rode o projeto:
+
+```bash
 npm run dev
 ```
 
-Abra `http://localhost:3000`.
+4. Abra:
 
-## Fluxo esperado
+```text
+http://localhost:3000
+```
 
-1. subir backend
-2. configurar `NEXT_PUBLIC_API_URL`
-3. abrir `/`
-4. navegar no portal publico
+## Fluxo de desenvolvimento esperado
 
-## Exportacao
+1. Suba a API em `Backend`
+2. Aponte `NEXT_PUBLIC_API_URL` e `BACKEND_API_URL` para a API local
+3. Rode o frontend
+4. Valide a home, páginas institucionais e o dashboard público
 
-Painel exporta tabela filtrada em CSV com confirmacao antes do download.
+## Scripts úteis
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
+
+## Estrutura resumida
+
+```text
+src/
+├─ app/
+├─ core/
+└─ features/
+   ├─ about/
+   ├─ home/
+   ├─ how-to-use/
+   └─ map/
+```
+
+## Integração com o backend
+
+Principais leituras públicas:
+
+- `GET /api/public/v1/flood-areas`
+- `GET /api/public/v1/manholes`
+- `GET /api/public/v1/reportes`
+
+O projeto usa rotas internas do Next para reduzir problemas de CORS e centralizar o acesso ao backend.
+
+## Build de produção
+
+```bash
+npm run build
+npm run start
+```
+
+Antes de publicar:
+
+- confira as URLs da API
+- valide o comportamento sem mocks
+- teste o dashboard com dados reais
+
+## Contribuição
+
+Leia [CONTRIBUTING.md](./CONTRIBUTING.md) para fluxo de contribuição, checklist e boas práticas de PR.
