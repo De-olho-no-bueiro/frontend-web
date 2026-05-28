@@ -3,7 +3,6 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import {
   AlertTriangle,
-  Apple,
   ArrowRight,
   Mail,
   MapPin,
@@ -23,6 +22,9 @@ import { AndroidDownloadButton } from '@/features/home/components/AndroidDownloa
 import { IosDownloadButton } from '@/features/home/components/IosDownloadButton';
 
 const sectionY = 'py-12 sm:py-16 lg:py-20';
+const betaBannerMessage =
+  'Atenção: este projeto está em fase de testes. Esta é uma versão beta e novas melhorias ainda serão lançadas.';
+const betaBannerRepeats = Array.from({ length: 4 }, (_, index) => index);
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return <p className="m-0 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-brand-eyebrow">{children}</p>;
@@ -176,40 +178,57 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Manifesto */}
         <section
-          id="manifesto"
-          className="relative mt-0 w-full overflow-hidden py-14 text-brand-on-dark sm:py-16"
-          aria-labelledby="manifesto-titulo"
+          aria-labelledby="formulario-ajuda-titulo"
+          className="relative mt-0 w-full overflow-hidden border-b border-violet-950/20 py-12 text-white sm:py-14 lg:py-16"
         >
-          <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-manifesto)]" aria-hidden />
-          <div className="pointer-events-none absolute -right-20 -top-28 h-[20rem] w-[20rem] rounded-full bg-sky-300/20 blur-3xl" aria-hidden />
-          <div
-            className="pointer-events-none absolute -bottom-36 -left-12 h-[16rem] w-[16rem] rounded-full bg-[color-mix(in_srgb,var(--brand-navy-900)_35%,transparent)] blur-3xl"
-            aria-hidden
-          />
+          <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-form)]" aria-hidden />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.18),transparent_34%),radial-gradient(circle_at_85%_80%,rgba(255,255,255,0.12),transparent_36%)]" aria-hidden />
           <div className={`${siteContentFrameClass} relative`}>
-            <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-16">
-              <div className="max-w-2xl border-l border-white/25 pl-6 sm:pl-8">
-                <Eyebrow>
-                  <span className="text-sky-200/95">Manifesto</span>
-                </Eyebrow>
-                <h2 id="manifesto-titulo" className="mt-4 m-0 text-[clamp(1.4rem,2.9vw,1.95rem)] font-bold leading-snug tracking-[-0.02em] text-white">
-                  Informação que salva vidas, conecta pessoas e transforma cidades.
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(240px,320px)] lg:items-center lg:gap-14">
+              <div className="max-w-2xl">
+                <p className="m-0 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-violet-100/82">Colaboração da comunidade</p>
+                <h2
+                  id="formulario-ajuda-titulo"
+                  className="mt-4 max-w-[14ch] text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-white"
+                >
+                  Preencha o formulário e nos ajude.
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-white/85 sm:text-[1.05rem]">
-                  Uma plataforma colaborativa que transforma relatos em soluções reais para os desafios das chuvas nas
-                  cidades.
+                <p className="mt-5 max-w-[36rem] text-base leading-8 text-violet-50/88 sm:text-lg">
+                  Este formulário foi criado para reunir opiniões, sugestões e relatos sobre a experiência com a
+                  plataforma. Sua contribuição ajuda a priorizar melhorias da versão beta e orientar as próximas
+                  evoluções do projeto.
                 </p>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSfI9bj6G2SxClKnnsFKXgbuxlE_MNxtj0HLYrtPi783xUIw4g/viewform?usp=dialog"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-sm font-semibold text-violet-950 shadow-lg shadow-violet-950/20 transition hover:bg-violet-50"
+                  >
+                    Abrir formulário
+                    <ArrowRight size={18} className="ml-2" />
+                  </a>
+                </div>
               </div>
-              <div className="flex flex-col items-start gap-4 rounded-2xl border border-white/15 bg-white/10 px-6 py-6 backdrop-blur-sm sm:flex-row sm:items-center sm:gap-6 sm:px-8">
-                <span className="font-mono text-[clamp(2.25rem,4.5vw,3rem)] font-bold tabular-nums text-white">
-                  +2.500
-                </span>
-                <div className="hidden h-12 w-px bg-white/25 sm:block" aria-hidden />
-                <p className="m-0 max-w-[14rem] text-sm leading-snug text-white/80">
-                  Pessoas e instituições somando dados para uma resposta mais rápida.
-                </p>
+
+              <div className="justify-self-start lg:justify-self-end">
+                <div className="rounded-[2rem] border border-white/18 bg-white/10 p-4 shadow-[0_24px_60px_rgba(32,8,70,0.28)] backdrop-blur-sm sm:p-5">
+                  <div className="rounded-[1.35rem] bg-white p-3">
+                    <Image
+                      src="/assets/images/QRcode_formulário.jpeg"
+                      alt="QR code para acessar o formulário de feedback do projeto"
+                      width={280}
+                      height={280}
+                      sizes="(max-width: 640px) 220px, 280px"
+                      className="h-auto w-[min(58vw,17.5rem)] rounded-xl object-cover"
+                    />
+                  </div>
+                  <p className="m-0 mt-4 text-center text-sm font-medium leading-relaxed text-violet-50/82">
+                    Escaneie o QR code ou use o botão para abrir o formulário.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -236,6 +255,35 @@ export default function HomePage() {
             ))}
           </ol>
         </SectionIntro>
+
+        <section className="relative w-full overflow-hidden py-12 text-brand-on-dark sm:py-14 lg:py-16">
+          <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-metrics)]" aria-hidden />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_15%_20%,rgba(255,255,255,0.12),transparent_55%)]" aria-hidden />
+          <div className={`${siteContentFrameClass} relative`}>
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-0 lg:divide-x lg:divide-white/15">
+              <div className="lg:w-[44%] lg:shrink-0 lg:pr-12">
+                <div className="border-l-[3px] border-sky-300/80 pl-6">
+                  <strong className="block font-mono text-[clamp(2.5rem,7vw,4.25rem)] font-bold leading-none tracking-[-0.04em] tabular-nums text-white">
+                    {metrics[0].value}
+                  </strong>
+                  <span className="mt-4 block max-w-[16rem] text-base font-medium leading-snug text-white/82">{metrics[0].label}</span>
+                </div>
+              </div>
+
+              <ul className="m-0 flex list-none flex-col gap-0 p-0 sm:grid sm:grid-cols-3 sm:gap-0 lg:flex-1 lg:pl-12" role="list">
+                {metrics.slice(1).map((item) => (
+                  <li
+                    key={item.label}
+                    className="flex flex-col justify-end border-t border-white/12 py-5 first:border-t-0 first:pt-0 sm:border-l sm:border-t-0 sm:border-white/12 sm:px-5 sm:py-4 sm:first:border-l-0 sm:first:pl-0 lg:min-h-[6.5rem] lg:px-7"
+                  >
+                    <strong className="font-mono text-[clamp(1.35rem,2.8vw,1.85rem)] font-bold tabular-nums text-white">{item.value}</strong>
+                    <span className="mt-2 block text-sm font-medium leading-snug text-brand-on-dark/78">{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
 
         <SectionIntro
           title="Como funciona?"
@@ -337,31 +385,24 @@ export default function HomePage() {
           <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-300/40 to-transparent" />
         </div>
 
-        <section className="relative w-full overflow-hidden py-12 text-brand-on-dark sm:py-14 lg:py-16">
-          <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-metrics)]" aria-hidden />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_15%_20%,rgba(255,255,255,0.12),transparent_55%)]" aria-hidden />
-          <div className={`${siteContentFrameClass} relative`}>
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-0 lg:divide-x lg:divide-white/15">
-              <div className="lg:w-[44%] lg:shrink-0 lg:pr-12">
-                <div className="border-l-[3px] border-sky-300/80 pl-6">
-                  <strong className="block font-mono text-[clamp(2.5rem,7vw,4.25rem)] font-bold leading-none tracking-[-0.04em] tabular-nums text-white">
-                    {metrics[0].value}
-                  </strong>
-                  <span className="mt-4 block max-w-[16rem] text-base font-medium leading-snug text-white/82">{metrics[0].label}</span>
-                </div>
-              </div>
+        
 
-              <ul className="m-0 flex list-none flex-col gap-0 p-0 sm:grid sm:grid-cols-3 sm:gap-0 lg:flex-1 lg:pl-12" role="list">
-                {metrics.slice(1).map((item) => (
-                  <li
-                    key={item.label}
-                    className="flex flex-col justify-end border-t border-white/12 py-5 first:border-t-0 first:pt-0 sm:border-l sm:border-t-0 sm:border-white/12 sm:px-5 sm:py-4 sm:first:border-l-0 sm:first:pl-0 lg:min-h-[6.5rem] lg:px-7"
-                  >
-                    <strong className="font-mono text-[clamp(1.35rem,2.8vw,1.85rem)] font-bold tabular-nums text-white">{item.value}</strong>
-                    <span className="mt-2 block text-sm font-medium leading-snug text-brand-on-dark/78">{item.label}</span>
-                  </li>
-                ))}
-              </ul>
+        <section
+          aria-label="Aviso sobre a versão beta do projeto"
+          className="relative w-full overflow-hidden border-y border-red-950/25 bg-[linear-gradient(135deg,#7f121a_0%,#af1d2e_52%,#db3348_100%)] text-white"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_44%)]" aria-hidden />
+          <div className="home-beta-marquee">
+            <div className="home-beta-marquee-track">
+              {[...betaBannerRepeats, ...betaBannerRepeats].map((item, index) => (
+                <span
+                  key={`${item}-${index}`}
+                  className="inline-flex items-center gap-3 whitespace-nowrap px-4 py-4 text-sm font-semibold tracking-[0.02em] sm:px-5 sm:text-[0.95rem]"
+                >
+                  <AlertTriangle size={18} className="shrink-0" strokeWidth={2.4} />
+                  {betaBannerMessage}
+                </span>
+              ))}
             </div>
           </div>
         </section>
