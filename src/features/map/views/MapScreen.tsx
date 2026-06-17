@@ -64,10 +64,16 @@ type ManholeApiRecord = {
 
 function mapFloodAreaFromApi(area: FloodAreaApiRecord): FloodArea {
   const coords = Array.isArray(area.coordinates) ? area.coordinates : [];
+  let nivelRaw = (area.nivel || 'medio').toLowerCase();
+  const validNiveis = ['baixo', 'leve', 'medio', 'grave'];
+  if (!validNiveis.includes(nivelRaw)) {
+    nivelRaw = 'medio';
+  }
+  
   return {
     id: `area-${area.id}`,
     coordinates: coords as FloodArea['coordinates'],
-    nivel: (area.nivel as FloodArea['nivel']) || 'medio',
+    nivel: nivelRaw as FloodArea['nivel'],
     descricao: area.descricao || area.name,
     endereco: area.endereco,
     dataHora: area.createdAt ?? '',

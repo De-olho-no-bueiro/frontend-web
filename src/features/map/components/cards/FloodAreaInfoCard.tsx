@@ -21,7 +21,7 @@ function formatDate(iso: string): string {
 const rowClass = 'border-b border-slate-100 py-3 last:border-b-0';
 
 export default function FloodAreaInfoCard({ floodArea, onFocus, selected = false }: FloodAreaInfoCardProps) {
-  const colors = NIVEL_COLORS[floodArea.nivel];
+  const colors = NIVEL_COLORS[floodArea.nivel] || NIVEL_COLORS['medio'];
 
   return (
     <button
@@ -46,7 +46,7 @@ export default function FloodAreaInfoCard({ floodArea, onFocus, selected = false
           className="shrink-0 rounded-md px-2 py-1 text-xs font-bold uppercase tracking-[0.06em] text-white"
           style={{ backgroundColor: colors.badge }}
         >
-          {NIVEL_LABELS[floodArea.nivel]}
+          {NIVEL_LABELS[floodArea.nivel] || 'Desconhecido'}
         </span>
       </div>
 

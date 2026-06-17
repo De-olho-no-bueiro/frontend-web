@@ -81,7 +81,8 @@ export default function MapItemsTable({
             {items.map((item) => {
               if (item.type === 'floodArea') {
                 const floodArea = item.data;
-                const colors = NIVEL_COLORS[floodArea.nivel];
+                const colors = NIVEL_COLORS[floodArea.nivel] || NIVEL_COLORS['medio'];
+                const label = NIVEL_LABELS[floodArea.nivel] || 'Desconhecido';
 
                 return (
                   <tr
@@ -96,11 +97,11 @@ export default function MapItemsTable({
                       <div className="flex flex-col gap-2">
                         <span className="font-semibold text-slate-800">Area de Alagamento</span>
                         <span className="w-fit rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-[0.08em] text-white" style={{ backgroundColor: colors.badge }}>
-                          {NIVEL_LABELS[floodArea.nivel]}
+                          {label}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-slate-700">{NIVEL_LABELS[floodArea.nivel]}</td>
+                    <td className="px-4 py-4 text-slate-700">{label}</td>
                     <td className="px-4 py-4 font-medium text-slate-800">{floodArea.id}</td>
                     <td className="px-4 py-4 text-slate-700">{formatDate(floodArea.dataHora)}</td>
                     <td className="px-4 py-4 text-slate-700">{floodArea.endereco || '—'}</td>

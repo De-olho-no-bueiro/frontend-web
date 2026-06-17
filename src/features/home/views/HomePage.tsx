@@ -178,61 +178,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section
-          aria-labelledby="formulario-ajuda-titulo"
-          className="relative mt-0 w-full overflow-hidden border-b border-violet-950/20 py-12 text-white sm:py-14 lg:py-16"
-        >
-          <div className="pointer-events-none absolute inset-0 [background-image:var(--gradient-band-form)]" aria-hidden />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.18),transparent_34%),radial-gradient(circle_at_85%_80%,rgba(255,255,255,0.12),transparent_36%)]" aria-hidden />
-          <div className={`${siteContentFrameClass} relative`}>
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(240px,320px)] lg:items-center lg:gap-14">
-              <div className="max-w-2xl">
-                <p className="m-0 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-violet-100/82">Colaboração da comunidade</p>
-                <h2
-                  id="formulario-ajuda-titulo"
-                  className="mt-4 max-w-[14ch] text-[clamp(1.9rem,4vw,3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-white"
-                >
-                  Preencha o formulário e nos ajude.
-                </h2>
-                <p className="mt-5 max-w-[36rem] text-base leading-8 text-violet-50/88 sm:text-lg">
-                  Este formulário foi criado para reunir opiniões, sugestões e relatos sobre a experiência com a
-                  plataforma. Sua contribuição ajuda a priorizar melhorias da versão beta e orientar as próximas
-                  evoluções do projeto.
-                </p>
 
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <a
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSfI9bj6G2SxClKnnsFKXgbuxlE_MNxtj0HLYrtPi783xUIw4g/viewform?usp=dialog"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-white px-6 text-sm font-semibold text-violet-950 shadow-lg shadow-violet-950/20 transition hover:bg-violet-50"
-                  >
-                    Abrir formulário
-                    <ArrowRight size={18} className="ml-2" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="justify-self-start lg:justify-self-end">
-                <div className="rounded-[2rem] border border-white/18 bg-white/10 p-4 shadow-[0_24px_60px_rgba(32,8,70,0.28)] backdrop-blur-sm sm:p-5">
-                  <div className="rounded-[1.35rem] bg-white p-3">
-                    <Image
-                      src="/assets/images/QRcode_formulário.jpeg"
-                      alt="QR code para acessar o formulário de feedback do projeto"
-                      width={280}
-                      height={280}
-                      sizes="(max-width: 640px) 220px, 280px"
-                      className="h-auto w-[min(58vw,17.5rem)] rounded-xl object-cover"
-                    />
-                  </div>
-                  <p className="m-0 mt-4 text-center text-sm font-medium leading-relaxed text-violet-50/82">
-                    Escaneie o QR code ou use o botão para abrir o formulário.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <SectionIntro
           id="solucao"

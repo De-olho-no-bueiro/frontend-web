@@ -134,7 +134,7 @@ export default function MapView({
         />
 
         {floodAreas.map((floodArea) => {
-          const colors = NIVEL_COLORS[floodArea.nivel];
+          const colors = NIVEL_COLORS[floodArea.nivel] || NIVEL_COLORS['medio'];
           const positions = floodArea.coordinates.map(
             (coordinate) => [coordinate.latitude, coordinate.longitude] as [number, number],
           );
