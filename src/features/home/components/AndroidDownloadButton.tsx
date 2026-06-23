@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Play, Download, X } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import Link from 'next/link';
 
 export function AndroidDownloadButton() {
@@ -88,7 +88,7 @@ export function AndroidDownloadButton() {
                   Cancelar
                 </button>
                 <a
-                  href="/downloads/app-release.apk"
+                  href="/downloads/de-olho-no-bueiro.apk"
                   download="DeOlhoNoBueiro.apk"
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-transparent bg-sky-600 px-10 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   onClick={() => setIsModalOpen(false)}
