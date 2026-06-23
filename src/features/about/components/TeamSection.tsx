@@ -16,9 +16,9 @@ const teamMembers = [
   {
     name: 'Laldiane Pinheiro',
     role: 'Orientadora do Projeto',
-    image: 'https://media.licdn.com/dms/image/v2/D4E03AQGTY51mzyuGIg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1691280671445?e=1780531200&v=beta&t=DgSUQWj9vtfgoh9GNJ62AaRspl3SxD7wstGvYlF2_RY', // Ex: '/assets/images/foto1.png' ou 'https://media.licdn.com/dms/image/...'
+    image: 'https://media.licdn.com/dms/image/v2/D4E03AQGTY51mzyuGIg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1691280671445?e=1783555200&v=beta&t=wx-QS8_sC3xP002bGpq8ub0qinIIX5ImDh-IKP4yghg', // Ex: '/assets/images/foto1.png' ou 'https://media.licdn.com/dms/image/...'
     linkedin: 'https://www.linkedin.com/in/laldiane-pinheiro-aa43b429/',
-    github: '#'
+    github: ''
   },
   {
     name: 'Ian Alas',
@@ -31,7 +31,7 @@ const teamMembers = [
   {
     name: 'Saul Santos',
     role: 'Desenvolvedor Web',
-    image: 'https://media.licdn.com/dms/image/v2/D4E03AQE06D1X_LmYFg/profile-displayphoto-crop_800_800/B4EZsS4oKiGUAI-/0/1765548393716?e=1780531200&v=beta&t=6ylcTvtra2xD35voQME_GKKyWCSstirEpkl0zxlraxo',
+    image: 'https://media.licdn.com/dms/image/v2/D4E03AQE06D1X_LmYFg/profile-displayphoto-crop_800_800/B4EZsS4oKiGUAI-/0/1765548393716?e=1783555200&v=beta&t=4QZSV59jy8us6kUt5Dy9cASgNecluaKqjEAneAZCGt8',
     linkedin: 'https://www.linkedin.com/in/saul-santos-142372246/',
     github: 'https://github.com/SaulSantos1'
   },
@@ -52,14 +52,14 @@ const teamMembers = [
   {
     name: 'João Pedro',
     role: 'Comunicação',
-    image: 'https://media.licdn.com/dms/image/v2/D4E03AQHuTnZXrFlpFA/profile-displayphoto-crop_800_800/B4EZw1uB.WHgAI-/0/1770427785620?e=1780531200&v=beta&t=-w42k7bdCB7yvelmvFGEf92__r-oHYtBvyDmy31W-Ek',
+    image: 'https://media.licdn.com/dms/image/v2/D4E03AQHuTnZXrFlpFA/profile-displayphoto-crop_800_800/B4EZw1uB.WHgAI-/0/1770427785620?e=1783555200&v=beta&t=PAeTMloeHppHT5P1qFYignOBPyiupcrlIHzqYlwwL9s',
     linkedin: 'https://www.linkedin.com/in/jo%C3%A3o-pedro-campos-fernandes-40b9a0356/',
     github: 'https://github.com/jP30devs'
   },
   {
     name: 'Isabella Mendes',
     role: 'Data Engineering',
-    image: 'https://media.licdn.com/dms/image/v2/D4D03AQHJgQQtKu5uSQ/profile-displayphoto-shrink_800_800/B4DZaPf2FWG0Ag-/0/1746164212563?e=1780531200&v=beta&t=CeKQAJ-t7h4ooujqIQt2OPzVU3nUFzH9NRVmdCkxIAc',
+    image: 'https://media.licdn.com/dms/image/v2/D4D03AQHJgQQtKu5uSQ/profile-displayphoto-shrink_800_800/B4DZaPf2FWG0Ag-/0/1746164212563?e=1783555200&v=beta&t=MZpn31MHRMTRWOgJFUDa0AZ6E4CtpVeGxmnT93dKZ68',
     linkedin: 'https://www.linkedin.com/in/isabellamm/',
     github: 'https://github.com/ismendins/'
   }
